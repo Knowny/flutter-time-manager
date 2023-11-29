@@ -6,6 +6,7 @@ import 'package:itu_proj/util/todo_dialog_box.dart';
 
 import '../util/todo_tile.dart';
 
+
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
 
@@ -75,74 +76,23 @@ class _TaskPageState extends State<TaskPage> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        backgroundColor: Theme.of(context).backgroundColor,
-        appBar: AppBar(
-          title: Text('TO DO'),
-          elevation: 0,
+    return Scaffold(
+      body: Container(
+        child: ListView.builder(
+          itemCount: db.toDoList.length,
+          itemBuilder: (context, index) {
+            return ToDoTile(
+              taskName: db.toDoList[index][0],
+              taskCompleted: db.toDoList[index][1],
+              onChanged: (value) => checkBoxChanged(value, index),
+              deleteFunction: (context) => deleteTask(index),
+            );
+          },
         ),
-        floatingActionButton: FloatingActionButton(
+      ),
+      floatingActionButton: FloatingActionButton(
           onPressed: createNewTask,
           child: Icon(Icons.add),
-        ),
-        body: Column(
-          children: [
-            TabBar(
-              tabs: [
-                Tab(
-                  icon: Icon(
-                    Icons.checklist,
-                    color: Color.fromARGB(255, 208, 188, 255),
-                  ),
-                ),
-                Tab(
-                  icon: Icon(
-                    Icons.bar_chart,
-                    color: Color.fromARGB(255, 208, 188, 255),
-                  ),
-                ),
-                Tab(
-                  icon: Icon(
-                    Icons.timer,
-                    color: Color.fromARGB(255, 208, 188, 255),
-                  ),
-                ),
-                Tab(
-                  icon: Icon(
-                    Icons.settings,
-                    color: Color.fromARGB(255, 208, 188, 255),
-                  ),
-                ),
-              ],
-            ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  // TO DO TAB
-                  ListView.builder(
-                    itemCount: db.toDoList.length,
-                    itemBuilder: (context, index) {
-                      return ToDoTile(
-                        taskName: db.toDoList[index][0],
-                        taskCompleted: db.toDoList[index][1],
-                        onChanged: (value) => checkBoxChanged(value, index),
-                        deleteFunction: (context) => deleteTask(index),
-                      );
-                    },
-                  ),
-                  // STATISTICS TAB
-                  Container(),
-                  // TIMER TAB
-                  Container(),
-                  // SETTINGS TAB
-                  Container(),
-                ],
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }

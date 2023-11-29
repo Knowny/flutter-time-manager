@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:itu_proj/pages/task_page.dart';
+import 'package:itu_proj/pages/timer_page.dart';
+import 'package:itu_proj/pages/stats_page.dart';
+import 'package:itu_proj/pages/settings_page.dart';
+
+// import 'package:google_fonts/google_fonts.dart'; // for google fonts
 
 void main() async {
   //init the hive db
@@ -14,43 +19,49 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
+  // This widget is the root of my application.
   @override
   Widget build(BuildContext context) {
-
-    // DEFINE PRIMARY COLORS
-    Color myPrimaryColor = const Color.fromARGB(255, 208, 188, 255);
-    Color myBackgroundColor = const Color.fromARGB(255, 20, 18, 24);
-    Color myTextColor = const Color.fromARGB(255, 230, 224, 233);
-
-    // CREATE A MATERIAL COLORS FROM THE PRIMARY COLORS
-    MaterialColor myPrimarySwatch = MaterialColor(
-      myPrimaryColor.value, // Use the primary color's value
-      <int, Color>{
-        50: myPrimaryColor.withOpacity(0.1),
-        100: myPrimaryColor.withOpacity(0.2),
-        200: myPrimaryColor.withOpacity(0.3),
-        300: myPrimaryColor.withOpacity(0.4),
-        400: myPrimaryColor.withOpacity(0.5),
-        500: myPrimaryColor, // The primary color
-        600: myPrimaryColor.withOpacity(0.6),
-        700: myPrimaryColor.withOpacity(0.7),
-        800: myPrimaryColor.withOpacity(0.8),
-        900: myPrimaryColor.withOpacity(0.9),
-      },
-    );
-
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: TaskPage(),
       theme: ThemeData(
-        textTheme: TextTheme(
-          displayLarge: TextStyle(color: myTextColor),
-          bodyLarge: TextStyle(color: myTextColor), 
+        useMaterial3: true,
+
+        colorScheme: ColorScheme.fromSwatch(
+          // primary: Colors.orange,
+          primarySwatch: Colors.orange,
+          backgroundColor: Colors.grey[850],
+          brightness: Brightness.dark,
         ),
-        primarySwatch: myPrimarySwatch,
-        
-        backgroundColor: myBackgroundColor,
+
+        // textTheme: TextTheme(
+          // //google fonts applicable
+        // ),
+      ),
+      debugShowCheckedModeBanner: false,
+      home: DefaultTabController(
+        length: 4,
+        child: Scaffold(
+          appBar: AppBar(
+            bottom: const TabBar(
+              tabs: [
+                Tab(icon: Icon(Icons.checklist)),
+                Tab(icon: Icon(Icons.timer)),
+                Tab(icon: Icon(Icons.bar_chart)),
+                Tab(icon: Icon(Icons.settings)),
+              ],
+            ),
+            // title: const Text('Tabs Demo'),  // no title
+            toolbarHeight: 0, // not text -> as much space for application as possible
+          ),
+          body: const TabBarView(
+            children: [
+              TaskPage(),
+              TimerPage(),
+              StatsPage(),
+              SettingsPage(),
+            ],
+          ),
+        ), 
       ),
     );
   }

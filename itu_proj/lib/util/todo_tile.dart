@@ -33,7 +33,7 @@ class ToDoTile extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.all(24),
           decoration: BoxDecoration(
-            color: Theme.of(context).primaryColor,
+            color: Theme.of(context).cardColor,
             
             borderRadius: BorderRadius.circular(12),
           ),
@@ -43,7 +43,7 @@ class ToDoTile extends StatelessWidget {
               Checkbox(
                 value: taskCompleted,
                 onChanged: onChanged,
-                activeColor: Color.fromARGB(255, 79, 55, 139),
+                // activeColor: Color.fromARGB(255, 79, 55, 139),
               ),
       
               // task name
