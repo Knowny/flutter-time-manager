@@ -16,19 +16,18 @@ class DialogBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      // backgroundColor: const Color.fromARGB(255, 20, 18, 24),
-      content: Container(
+      surfaceTintColor: Colors.black,
+      backgroundColor: Colors.grey[850],
+      content: SizedBox(
         height: 200,
-        child:
-            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
           //get user input
           TextField(
             controller: controller,
-            // style: TextStyle(color: const Color.fromARGB(255, 230, 224, 233)),
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
+              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
               border: OutlineInputBorder(),
               hintText: "Add a new task",
-              // hintStyle: TextStyle(color: const Color.fromARGB(255, 230, 224, 233)),
             ),
           ),
 
@@ -37,7 +36,7 @@ class DialogBox extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               //save button
-              MyButton(
+              MyButtonPrimary(
                 text: "Save",
                 onPressed: onSave,
               ),
@@ -47,7 +46,7 @@ class DialogBox extends StatelessWidget {
               ),
 
               //cancel button
-              MyButton(
+              MyButtonSecondary(
                 text: "Cancel",
                 onPressed: onCancel,
               ),

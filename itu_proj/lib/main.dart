@@ -3,6 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:itu_proj/pages/task_page.dart';
 import 'package:itu_proj/pages/timer_page.dart';
 import 'package:itu_proj/pages/stats_page.dart';
+import 'package:itu_proj/pages/calendar_page.dart';
 import 'package:itu_proj/pages/settings_page.dart';
 
 // import 'package:google_fonts/google_fonts.dart'; // for google fonts
@@ -39,7 +40,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
-        length: 4,
+        length: 5,
         child: Scaffold(
           appBar: AppBar(
             bottom: const TabBar(
@@ -47,6 +48,7 @@ class MyApp extends StatelessWidget {
                 Tab(icon: Icon(Icons.checklist)),
                 Tab(icon: Icon(Icons.timer)),
                 Tab(icon: Icon(Icons.bar_chart)),
+                Tab(icon: Icon(Icons.calendar_month)),
                 Tab(icon: Icon(Icons.settings)),
               ],
             ),
@@ -58,6 +60,7 @@ class MyApp extends StatelessWidget {
               TaskPage(),
               TimerPage(),
               StatsPage(),
+              CalendarPage(),
               SettingsPage(),
             ],
           ),

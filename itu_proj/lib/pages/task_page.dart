@@ -59,7 +59,7 @@ class _TaskPageState extends State<TaskPage> {
       builder: (context) {
         return DialogBox(
           controller: _controller,
-          onSave: saveNewTask,
+          onSave: saveNewTask,  // TODO CHECK NON EMPTY AND LENGTH OF THE TEXT
           onCancel: () => Navigator.of(context).pop(),
         );
       },
