@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/todo_dialog_box.dart';
-import 'package:itu_proj/util/segmented_button.dart';
+import 'package:itu_proj/util/todo_segmented_button.dart';
 import '../util/todo_tile.dart';
 
 class TaskPage extends StatefulWidget {
