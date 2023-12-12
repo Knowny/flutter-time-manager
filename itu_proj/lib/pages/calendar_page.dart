@@ -1,9 +1,8 @@
+/// author(s): xjesko01
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-
 
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});

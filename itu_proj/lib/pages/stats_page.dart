@@ -1,6 +1,9 @@
+/// author(s): xjesko01
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
+import 'package:itu_proj/util/pie_chart.dart';
+import 'package:itu_proj/util/stats_segmented_button.dart';
 
 class StatsPage extends StatefulWidget {
   const StatsPage({super.key});
@@ -10,17 +13,15 @@ class StatsPage extends StatefulWidget {
 }
 
 class _StatsPageState extends State<StatsPage> {
-// refference the hive box
+  Selector selectorView = Selector.Today;
   final _myBox = Hive.box('mybox');
   ToDoDatabase db = ToDoDatabase();
 
   @override
   void initState() {
-    // 1st time ever opening app -> create default data
     if (_myBox.get("TODOLIST") == null) {
       db.createInitialData();
     } else {
-      // data already exists
       db.loadData();
     }
     super.initState();
@@ -29,14 +30,28 @@ class _StatsPageState extends State<StatsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        color: Colors.green,
-        child: Center(
-          child: Text(
-            'Stats Tab Content',
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: SingleChoice(
+              selectorView: selectorView,
+              onSelectionChanged: (Selector newSelection) {
+                setState(() {
+                  selectorView = newSelection;
+                });
+              },
+            ),
           ),
-        ),
-      ),
-    );
+        Expanded(
+          child: (selectorView == Selector.Today)
+          ? 
+            MyPieChart(db)
+          :
+            MyPieChart(db)
+          )
+      ]),
+    ); 
   }
+
 }
