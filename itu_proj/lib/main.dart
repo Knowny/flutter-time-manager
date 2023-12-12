@@ -1,6 +1,7 @@
 // author(s): xhusar11
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:itu_proj/util/segmented_button.dart';
 import 'package:itu_proj/pages/task_page.dart';
 import 'package:itu_proj/pages/timer_page.dart';
 import 'package:itu_proj/pages/stats_page.dart';
@@ -30,14 +31,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         useMaterial3: true,
-
         colorScheme: ColorScheme.fromSwatch(
-          // primary: Colors.orange,
           primarySwatch: Colors.orange,
           backgroundColor: Colors.grey[850],
           brightness: Brightness.dark,
         ),
-
         // textTheme: TextTheme(
           // //google fonts applicable
         // ),

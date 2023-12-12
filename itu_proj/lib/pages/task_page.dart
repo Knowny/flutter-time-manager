@@ -1,12 +1,10 @@
-// author(s): xhusar11
+/// author(s): xhusar11
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/todo_dialog_box.dart';
-// import 'package:itu_proj/main.dart';
-
+import 'package:itu_proj/util/segmented_button.dart';
 import '../util/todo_tile.dart';
-
 
 class TaskPage extends StatefulWidget {
   const TaskPage({super.key});
@@ -16,7 +14,9 @@ class TaskPage extends StatefulWidget {
 }
 
 class _TaskPageState extends State<TaskPage> {
-// refference the hive box
+  Selector selectorView = Selector.Tasks;
+  
+  // refference the hive box
   final _myBox = Hive.box('mybox');
   ToDoDatabase db = ToDoDatabase();
 
@@ -35,7 +35,7 @@ class _TaskPageState extends State<TaskPage> {
   // text controller
   final _controller = TextEditingController();
 
-  // checkbox tapped
+  // * TAPPED CHECKBOX
   void checkBoxChanged(bool? value, int index) {
     setState(() {
       db.toDoList[index][1] = !db.toDoList[index][1];
@@ -43,7 +43,7 @@ class _TaskPageState extends State<TaskPage> {
     db.updateDataBase();
   }
 
-  // save a new task
+  // * SAVE TASK
   void saveNewTask() {
     setState(() {
       db.toDoList.add([_controller.text, false]);
@@ -53,21 +53,21 @@ class _TaskPageState extends State<TaskPage> {
     db.updateDataBase();
   }
 
-  // ceate a new task
+  // * CREATE TASK
   void createNewTask() {
     showDialog(
       context: context,
       builder: (context) {
         return DialogBox(
           controller: _controller,
-          onSave: saveNewTask,  // TODO CHECK NON EMPTY AND LENGTH OF THE TEXT
+          onSave: saveNewTask, // TODO CHECK NON EMPTY AND LENGTH OF THE TEXT
           onCancel: () => Navigator.of(context).pop(),
         );
       },
     );
   }
 
-  // delete task
+  // * DELETE TASK
   void deleteTask(int index) {
     setState(() {
       db.toDoList.removeAt(index);
@@ -78,22 +78,61 @@ class _TaskPageState extends State<TaskPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        child: ListView.builder(
-          itemCount: db.toDoList.length,
-          itemBuilder: (context, index) {
-            return ToDoTile(
-              taskName: db.toDoList[index][0],
-              taskCompleted: db.toDoList[index][1],
-              onChanged: (value) => checkBoxChanged(value, index),
-              deleteFunction: (context) => deleteTask(index),
-            );
-          },
-        ),
+      body: Column(
+        children: [
+          // * SEGMENTED BUTTON
+           Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChoice(
+              selectorView: selectorView,
+              onSelectionChanged: (Selector newSelection) {
+                setState(() {
+                  selectorView = newSelection;
+                });
+              },
+            ),
+          ),
+          Expanded(
+            child: (selectorView == Selector.Tasks)
+              // * BUILD LIST - TASKS
+              ? ListView.builder(
+                itemCount: db.toDoList.length,
+                itemBuilder: (context, index) {
+                  return ToDoTile(
+                    taskName: db.toDoList[index][0],
+                    taskCompleted: db.toDoList[index][1],
+                    onChanged: (value) => checkBoxChanged(value, index),
+                    deleteFunction: (context) => deleteTask(index),
+                  );
+                },
+              )
+              :
+              // * BUILD LIST - HABITS
+              ListView.builder(
+                itemCount: db.toDoList.length - 1,
+                itemBuilder: (context, index) {
+                  return ToDoTile(
+                    taskName: db.toDoList[index + 1][0],
+                    taskCompleted: db.toDoList[index + 1][1],
+                    onChanged: (value) => checkBoxChanged(value, index + 1),
+                    deleteFunction: (context) => deleteTask(index + 1),
+                  );
+                },
+              ),
+          ),
+        ],
       ),
-      floatingActionButton: FloatingActionButton(
-          onPressed: createNewTask,
-          child: Icon(Icons.add),
+      floatingActionButton: (selectorView == Selector.Tasks) 
+      // * FLOATING ACTION BUTTON - TASKS
+      ? FloatingActionButton(
+        onPressed: createNewTask,
+        child: Icon(Icons.add),
+      )
+      :
+      // * FLOATING ACTION BUTTON - HABITS
+      FloatingActionButton(
+        onPressed: createNewTask,
+        child: Icon(Icons.remove),
       ),
     );
   }

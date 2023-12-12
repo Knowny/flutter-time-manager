@@ -21,6 +21,7 @@ class ToDoDatabase {
   final _myBox = Hive.box('mybox'); 
   // runs during the first ever app opening
   void createInitialData() {
+    // TaskName, Bool
     toDoList = [
       ["Create the database", false],
       ["Pass the ITU", false],
@@ -153,3 +154,4 @@ class ToDoDatabase {
   }
 
 }
+

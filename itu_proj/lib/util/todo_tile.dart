@@ -9,11 +9,13 @@ class ToDoTile extends StatelessWidget {
   Function(BuildContext)? deleteFunction;
 
   ToDoTile(
-      {super.key,
-      required this.taskName,
-      required this.taskCompleted,
-      required this.onChanged,
-      required this.deleteFunction,});
+    {super.key,
+    required this.taskName,
+    required this.taskCompleted,
+    required this.onChanged,
+    required this.deleteFunction,
+    }
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +37,6 @@ class ToDoTile extends StatelessWidget {
           padding: EdgeInsets.all(24),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
-            
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -54,7 +55,7 @@ class ToDoTile extends StatelessWidget {
                     decoration: taskCompleted
                         ? TextDecoration.lineThrough //if completed
                         : TextDecoration.none //if not completed
-                    ),
+                ),
               ),
             ],
           ),
