@@ -28,15 +28,14 @@ class _SingleChoiceState extends State<SingleChoice> {
   @override
   Widget build(BuildContext context) {
     return SegmentedButton<Selector>(
-      
       style: ButtonStyle(
-        
+        side: MaterialStateProperty.all(const BorderSide(width: 0.1, color: Colors.transparent)),
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.selected)) {
               return Colors.orange;
             }
-            return Colors.grey.shade800;  //Theme.of(context).canvasColor;
+            return Colors.grey.shade800;
           },
         ),
       ),

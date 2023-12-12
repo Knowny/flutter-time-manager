@@ -6,6 +6,7 @@ class ToDoTile extends StatelessWidget {
   final String taskName;
   final bool taskCompleted;
   Function(bool?)? onChanged;
+  Function(BuildContext)? editFunction;
   Function(BuildContext)? deleteFunction;
 
   ToDoTile(
@@ -13,6 +14,7 @@ class ToDoTile extends StatelessWidget {
     required this.taskName,
     required this.taskCompleted,
     required this.onChanged,
+    required this.editFunction,
     required this.deleteFunction,
     }
   );
@@ -20,43 +22,49 @@ class ToDoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 25.0, right: 25.0, top: 25.0),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: Slidable(
         endActionPane: ActionPane(
-          motion: StretchMotion(),
+          motion: const StretchMotion(),
           children: [
+            // * EDIT OPTION
+            SlidableAction(
+              onPressed: editFunction,
+              icon: Icons.edit,
+              backgroundColor: Colors.grey.shade600,
+              borderRadius: BorderRadius.circular(12),
+              ),
+            // * DELETE OPTION
             SlidableAction(
               onPressed: deleteFunction,
               icon: Icons.delete,
               backgroundColor: Colors.red,
               borderRadius: BorderRadius.circular(12),
-              )
+              ),
           ],
         ),
         child: Container(
-          padding: EdgeInsets.all(24),
+          padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: Theme.of(context).cardColor,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
             children: [
-              // checkbox
               Checkbox(
                 value: taskCompleted,
                 onChanged: onChanged,
-                // activeColor: Color.fromARGB(255, 79, 55, 139),
               ),
-      
-              // task name
               Text(
                 taskName,
                 style: TextStyle(
                     decoration: taskCompleted
-                        ? TextDecoration.lineThrough //if completed
-                        : TextDecoration.none //if not completed
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none
                 ),
               ),
+              const Spacer(),
+              const Icon(Icons.keyboard_arrow_left),
             ],
           ),
         ),
