@@ -12,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/category_pick.dart';
+import 'package:itu_proj/util/category_pick.dart';
 import 'package:itu_proj/util/timer_buttons.dart';
 //import 'dart:async';
 ///--------------------------------------------------------------
@@ -58,6 +59,11 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
   ///--------------------------------------------------------------
   ///                     TIMER TEXT
   ///--------------------------------------------------------------
+  bool saveActivity = false;
+  bool categoryPicked = false;
+
+
+  //changes time text
   String get countText {
     Duration count = controller.duration! * controller.value + Duration(minutes: minutes);
     //return formatted text in tertiary operator
@@ -98,6 +104,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
             //zero out duration
             controller.duration = Duration.zero;
             categoryPicked = false;
+            categoryPicked = false;
             isRunning = false;
             activityCreate();
           }
@@ -112,6 +119,8 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
             lastTimer = controller.duration! * progress + Duration(minutes: minutes);
             controller.duration = Duration.zero;
             isRunning = false;
+            saveActivity = true;
+
 
           }
           //display full circle
@@ -146,6 +155,8 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
   ///--------------------------------------------------------------
   ///                     BUILD
   ///--------------------------------------------------------------
+  
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -409,6 +420,20 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                     }else if (controller.isDismissed && isIncremental){
                       controller.duration = const Duration(seconds: 60);
                       controller.forward();
+                    }else if (controller.isDismissed && isIncremental){
+                      controller.duration = lastTimer;
+                      controller.forward();
+                      setState(() {
+                        categoryPicked = true;
+                        isRunning = true;
+                      });
+                    }
+                  },
+                  child: const RoundButton(icon: Icons.restart_alt_rounded),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    if(isIncremental){
                       setState(() {
                         categoryPicked = true;
                         isRunning = true;
