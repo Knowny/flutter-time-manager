@@ -61,6 +61,22 @@ class ToDoDatabase {
       ["Free Time", Colors.yellow],
       ["Socialising", Colors.orange]
     ];
+
+    activityList = [
+    // ["ACTIVITY_NAME", "CATEGORY", date(dateTime), timeSpent (seconds)]
+      ["Learning Japanese", "School", DateTime.now(), 60*30],
+      ["Push Ups", "Sport", DateTime.now(), 60*10],
+      ["Watching Spidrman", "Free Time", DateTime.now(), 60*120],
+      ["Talking with Jessica", "Socialising", DateTime.now(), 60*5],
+    ];
+    
+    categoryList = [
+    // ["NAME","COLOR"]
+      ["School", "Red", 60*30],
+      ["Sport", "Blue", 60*10],
+      ["Free Time", "Yellow", 60*120],
+      ["Socialising", "Orange", 60*5]
+    ];
   }
 
   // load the data from db
