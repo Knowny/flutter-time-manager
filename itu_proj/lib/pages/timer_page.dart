@@ -29,7 +29,11 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
   ///                          db
   ///--------------------------------------------------------------
   // refference the hive box
+/// TickerProviderStateMixin for Animation controller vsync
+class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
+// refference the hive box
   final _myBox = Hive.box('mybox');
+  //database stufferino
   ToDoDatabase db = ToDoDatabase();
 
   ///--------------------------------------------------------------
