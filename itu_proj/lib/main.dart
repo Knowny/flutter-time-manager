@@ -1,4 +1,4 @@
-// author(s): xhusar11
+/// author(s): xhusar11
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:itu_proj/util/todo_segmented_button.dart';
