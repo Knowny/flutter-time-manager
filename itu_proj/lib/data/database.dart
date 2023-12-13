@@ -72,10 +72,10 @@ class ToDoDatabase {
     
     categoryList = [
     // ["NAME","COLOR"]
-      ["School", "Red", 60*30],
-      ["Sport", "Blue", 60*10],
-      ["Free Time", "Yellow", 60*120],
-      ["Socialising", "Orange", 60*5]
+      ["School", Colors.red, 60*30],
+      ["Sport", Colors.blue, 60*10],
+      ["Free Time", Colors.yellow, 60*120],
+      ["Socialising", Colors.orange, 60*5]
     ];
   }
 
