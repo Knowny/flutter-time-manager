@@ -1,10 +1,12 @@
 /// file: timer_page.dart
 /// author: xmager00
 /// brief: timer tab
+/// 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
+import 'package:itu_proj/util/category_pick.dart';
 import 'package:itu_proj/util/timer_buttons.dart';
 
 class TimerPage extends StatefulWidget {
@@ -24,9 +26,13 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
 
   int minutes = 0;
 
+  String categoryPickedName = "";
+
   bool isRunning = false;
   bool isIncremental = false;
   bool saveActivity = false;
+  bool categoryPicked = false;
+
 
   //changes time text
   String get countText {
@@ -65,6 +71,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
             lastTimer = controller.duration!;
             //zero out duration
             controller.duration = Duration.zero;
+            categoryPicked = false;
             isRunning = false;
           }
           else if (isIncremental && controller.isCompleted){ //incremental ended cycle
@@ -79,6 +86,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
             controller.duration = Duration.zero;
             isRunning = false;
             saveActivity = true;
+
           }
           //display full circle
           progress = 1.0;  
@@ -96,6 +104,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
       super.dispose();
     }
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -109,7 +118,8 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                 Padding(
                   padding: EdgeInsets.all(40),
                   child: Text(
-                    'minutes: ${minutes} Last Timer setting: ${lastTimer.inHours}:${(lastTimer.inMinutes % 60).toString().padLeft(2, '0')}:${(lastTimer.inSeconds % 60).toString().padLeft(2, '0')}'
+                    'Last setting: ${categoryPickedName} for ${lastTimer.inHours}:${(lastTimer.inMinutes % 60).toString().padLeft(2, '0')}:${(lastTimer.inSeconds % 60).toString().padLeft(2, '0')}',
+                    //style: TextStyle(color: db.getCategoryColor("Red")),
                   ),
                 ),
               Stack(
@@ -171,21 +181,49 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
               children: [
                 GestureDetector(
                   onTap: () {
+                    if(!categoryPicked && controller.isDismissed){
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return CategoryBox(
+                            categoryList: db.categoryList,
+                            onCategorySelected: (selectedCategory) {
+                            // Handle the selected category in your main page
+                              setState(() {
+                                categoryPickedName = selectedCategory;
+                                categoryPicked = true;
+                              });
+                              if (isIncremental){
+                                setState(() {
+                                  controller.value = 0;
+                                  controller.duration = const Duration(seconds: 60);
+                                });
+                                
+                                controller.forward();
+                              }else{
+                                controller.reverse(from: controller.value == 0 ? 1.0 : controller.value);
+                              }
+                              setState(() {
+                                isRunning = true;
+                              });
+                             
+                          },
+                          );
+                        },
+                      );
+                      
+                    }
+                    
                     if (controller.isAnimating){
                       controller.stop();
                       setState(() {
                         isRunning = false;
                       });
                     }else{
-                      if (isIncremental){
-                        setState(() {
-                          controller.value = 0;
-                          controller.duration = const Duration(seconds: 60);
-                        });
-                        
-                        controller.forward();
-                      }else{
+                      if (categoryPicked && !isIncremental){
                         controller.reverse(from: controller.value == 0 ? 1.0 : controller.value);
+                      }else if (categoryPicked && isIncremental){
+                        controller.forward(from: controller.value);
                       }
                       setState(() {
                         isRunning = true;
@@ -202,6 +240,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                     controller.reset();
                     setState(() {
                       isRunning = false;
+                      categoryPicked = false;
                     });
                   },
                   child: const RoundButton(
@@ -210,12 +249,19 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                 ),
                 GestureDetector(
                   onTap: () {
-                    if (controller.isDismissed){
+                    if (controller.isDismissed && !isIncremental){
                       controller.duration = lastTimer;
                       controller.reverse(
                         from: 1.0
                       );
                       setState(() {
+                        isRunning = true;
+                      });
+                    }else if (controller.isDismissed && isIncremental){
+                      controller.duration = lastTimer;
+                      controller.forward();
+                      setState(() {
+                        categoryPicked = true;
                         isRunning = true;
                       });
                     }
