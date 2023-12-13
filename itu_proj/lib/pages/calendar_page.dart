@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
+import 'package:itu_proj/util/todo_dialog_box.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -18,11 +19,12 @@ class _CalendarPageState extends State<CalendarPage> {
 
   DateTime today = DateTime.now();
 
+  final _controller = TextEditingController();
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
       today = day;
     });
-  }
+  } 
 
   @override
   void initState() {
@@ -35,12 +37,33 @@ class _CalendarPageState extends State<CalendarPage> {
     }
     super.initState();
   }
+   
+  void saveNewTask() {
+    setState(() {
+      db.toDoList.add([_controller.text, false]);
+      _controller.clear();
+    });
+    Navigator.of(context).pop();
+    db.updateDataBase();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          showDialog(
+            context: context, 
+            builder: (context) {
+              return DialogBox(
+                controller: _controller,
+                onSave: saveNewTask,  // TODO CHECK NON EMPTY AND LENGTH OF THE TEXT
+                onCancel: () => Navigator.of(context).pop(),
+              );
+          });
+        },
+      ),
+      body: Column(
         children: [
           Container(
               child: TableCalendar(

@@ -33,7 +33,7 @@ class _StatsPageState extends State<StatsPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
             child: SingleChoice(
               selectorView: selectorView,
               onSelectionChanged: (Selector newSelection) {

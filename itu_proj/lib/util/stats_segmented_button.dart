@@ -36,7 +36,7 @@ class _SingleChoiceState extends State<SingleChoice> {
             if (states.contains(MaterialState.selected)) {
               return Colors.orange;
             }
-            return Colors.grey.shade800;  //Theme.of(context).canvasColor;
+            return Colors.grey.shade800;
           },
         ),
       ),
@@ -47,7 +47,7 @@ class _SingleChoiceState extends State<SingleChoice> {
         ),
         ButtonSegment<Selector>(
           value: Selector.Week,
-          label: Text('Week'),
+          label: Text('Week '),
         ),
         ButtonSegment<Selector>(
           value: Selector.Month,

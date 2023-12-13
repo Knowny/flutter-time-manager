@@ -61,12 +61,15 @@ class _MyPieChartState extends State<MyPieChart> {
             sections: showingSections(spots, colors),
           ),
         ),
-        Text(
+        Text( //TODO add category name into the circle
+          (touchedIndex == -1 ? "Total time" : widget.db.categoryList[touchedIndex][0]) + "\n" + 
           formatDuration(
             touchedIndex == -1 ? widget.db.getTotalTimeSpent() : widget.db.categoryList[touchedIndex][2],
           ),
           style: const TextStyle(fontSize: 20),
+          
         ),
+        //TODO add after clicked section specific activities and times
       ],
     );
   }
