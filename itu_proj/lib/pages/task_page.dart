@@ -64,10 +64,10 @@ class _TaskPageState extends State<TaskPage> {
           if (!db.habitList[index][2]) {
             timer.cancel();
           }
-
-          // calculate the time by comparing curr time and start time
+          
           var currentTime = DateTime.now();
 
+          // rewrite the time spent by calculating spent time + curr time - start time
           db.habitList[index][3] = spentTime +
               currentTime.second -
               startTime.second +

@@ -28,6 +28,33 @@ class HabitTile extends StatelessWidget {
     required this.deleteFunction,
   });
 
+  // format seconds into hour:min:sec
+  String formatTime(int totalSeconds) {
+    String seconds = (totalSeconds % 60).toString();
+    String minutes = (totalSeconds / 60)
+        .toStringAsFixed(5); // 5 decimal places (for calculation and rounding)
+
+    // if seconds are 1 digit number, add a 0 in front of it
+    if (seconds.length == 1) {
+      seconds = '0' + seconds;
+    }
+
+    // if minutes are 1 digit number
+    if (minutes[1] == '.') {
+      minutes =
+          minutes.substring(0, 1); // get the numbers before the decimal place
+    }
+
+    // todo -> do a simmilar thing for hours
+
+    return minutes + ':' + seconds;
+  }
+
+  // calculate the percentage of the progress bar
+  double percentCompleted() {
+    return timeSpent / (timeDuration * 60);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -75,8 +102,10 @@ class HabitTile extends StatelessWidget {
                     children: [
                       CircularPercentIndicator(
                         radius: 32,
-                        percent: 0.7,
-                        // TODO: Add necessary CircularPercentIndicator properties
+                        percent:
+                            percentCompleted() < 1 ? percentCompleted() : 1,  // cap the percent to 1
+                        progressColor: Colors
+                            .orange, //todo - suggestion -> the progress bar color should be the color of the category
                       ),
                       Center(
                         child: Icon(
@@ -109,7 +138,12 @@ class HabitTile extends StatelessWidget {
                   // * PROGRESS TEXT
                   Text(
                     // TODO
-                    timeSpent.toString() + ' / ' + timeDuration.toString(),
+                    formatTime(timeSpent) +
+                        ' / ' +
+                        timeDuration.toString() +
+                        ' = ' +
+                        (percentCompleted() * 100).toStringAsFixed(0) +
+                        '%',
                     // '2:00 / 10 = 20%',
                     style: const TextStyle(
                       color: Colors.grey,
