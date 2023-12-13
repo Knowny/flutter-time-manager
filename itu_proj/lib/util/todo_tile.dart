@@ -9,15 +9,14 @@ class ToDoTile extends StatelessWidget {
   Function(BuildContext)? editFunction;
   Function(BuildContext)? deleteFunction;
 
-  ToDoTile(
-    {super.key,
+  ToDoTile({
+    super.key,
     required this.taskName,
     required this.taskCompleted,
     required this.onChanged,
     required this.editFunction,
     required this.deleteFunction,
-    }
-  );
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -33,46 +32,47 @@ class ToDoTile extends StatelessWidget {
               icon: Icons.edit,
               backgroundColor: Colors.grey.shade700,
               borderRadius: BorderRadius.circular(12),
-              ),
+            ),
             // * DELETE OPTION
             SlidableAction(
               onPressed: deleteFunction,
               icon: Icons.delete,
               backgroundColor: Colors.red,
               borderRadius: BorderRadius.circular(12),
-              ),
+            ),
           ],
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: taskCompleted 
-          ? BoxDecoration(
-            
-            color: Colors.grey.shade600,
-            borderRadius: BorderRadius.circular(12),
-          )
-          : BoxDecoration(
-            color: Theme.of(context).cardColor,
-            borderRadius: BorderRadius.circular(12),
-          ), 
+          decoration: taskCompleted
+              ? BoxDecoration(
+                  color: Colors.grey.shade600,
+                  borderRadius: BorderRadius.circular(12),
+                )
+              : BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
           child: Row(
             children: [
+              // * CHECKBOX
               Checkbox(
                 value: taskCompleted,
                 onChanged: onChanged,
               ),
+              // * TASK NAME
               Container(
-                width: 250,
+                width: 270,
                 child: Text(
                   taskName,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                       decoration: taskCompleted
                           ? TextDecoration.lineThrough
-                          : TextDecoration.none
-                  ),
+                          : TextDecoration.none),
                 ),
               ),
+              // * SLIDABLE ICON
               const Spacer(),
               const Icon(Icons.keyboard_arrow_left),
             ],

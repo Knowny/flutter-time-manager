@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:itu_proj/util/my_button.dart';
 
-class DialogBox extends StatelessWidget {
+class HabitDialogBox extends StatelessWidget {
   final controller;
   VoidCallback onSave;
   VoidCallback onCancel;
 
-  DialogBox({
+  HabitDialogBox({
     super.key,
     required this.controller,
     required this.onSave,
@@ -20,17 +20,19 @@ class DialogBox extends StatelessWidget {
       surfaceTintColor: Colors.black,
       backgroundColor: Colors.grey[850],
       content: SizedBox(
-        height: 200,
+        height: 300,
         child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          // * USER INPUT - TASK NAME
+          // * USER INPUT - HABIT NAME
           TextField(
             controller: controller,
             decoration: const InputDecoration(
               enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
               border: OutlineInputBorder(),
-              hintText: "Add a new task",
+              hintText: "Add a new habit",
             ),
           ),
+          // todo * USER INPUT - HABIT DURATION
+          // todo * USER INPUT - HABIT CATEGORY
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [

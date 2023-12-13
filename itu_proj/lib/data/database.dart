@@ -12,19 +12,28 @@ var colorMap = {
 };
 
 class ToDoDatabase {
+  // * TASK LIST
   List toDoList = [];
   List activityList = [];
   List categoryList = [];
   List ongoingActivity = [];
+  // * HABIT LIST
+  List habitList = []; 
 
   // refference the box
   final _myBox = Hive.box('mybox'); 
   // runs during the first ever app opening
   void createInitialData() {
-    // TaskName, Bool
+    // taskName, isCompleted
     toDoList = [
       ["Create the database", false],
       ["Pass the ITU", false],
+    ];
+    // habitName, isCompleted, isHabitActive, timeSpent (sec), timeDuration (min), category
+    habitList = [
+      ["Code", false, false, 0, 30],
+      ["Excercise", false, false, 0, 20],
+      ["Meditate", false, false, 0, 10],
     ];
     //["name", "category", start_time, end_time, duration, goal]
     ongoingActivity = [];
@@ -52,7 +61,8 @@ class ToDoDatabase {
 
   // load the data from db
   void loadData() {
-    toDoList = _myBox.get("TODOLIST");
+    toDoList = _myBox.get("TODOLIST");  // TODO RENAME TO TASKLIST
+    habitList = _myBox.get("HABITLIST");
     activityList = _myBox.get("ACTIVITYLIST");
     categoryList = _myBox.get("CATEGORYLIST");
   }
@@ -60,6 +70,7 @@ class ToDoDatabase {
   // update the db
   void updateDataBase(){
     _myBox.put("TODOLIST", toDoList);
+    _myBox.put("HABITLIST", habitList);
     _myBox.put("ACTIVITYLIST", activityList);
     _myBox.put("CATEGORYLIST", categoryList);
   }
