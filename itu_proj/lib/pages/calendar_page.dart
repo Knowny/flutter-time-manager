@@ -2,7 +2,8 @@
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
-import 'package:itu_proj/util/todo_dialog_box.dart';
+import 'package:itu_proj/util/activity_dialog_box.dart';
+import 'package:itu_proj/util/activity_list.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarPage extends StatefulWidget {
@@ -17,12 +18,12 @@ class _CalendarPageState extends State<CalendarPage> {
   final _myBox = Hive.box('mybox');
   ToDoDatabase db = ToDoDatabase();
 
-  DateTime today = DateTime.now();
+  DateTime selectedDay = DateTime.now();
 
   final _controller = TextEditingController();
   void _onDaySelected(DateTime day, DateTime focusedDay) {
     setState(() {
-      today = day;
+      selectedDay = day;
     });
   } 
 
@@ -38,7 +39,7 @@ class _CalendarPageState extends State<CalendarPage> {
     super.initState();
   }
    
-  void saveNewTask() {
+  void saveNewActivity() {
     setState(() {
       db.toDoList.add([_controller.text, false]);
       _controller.clear();
@@ -46,47 +47,75 @@ class _CalendarPageState extends State<CalendarPage> {
     Navigator.of(context).pop();
     db.updateDataBase();
   }
+  void createNewActivity() {
+    //TODO CHECK SO THE TIME IS NOT HIGHER THAT NOW()
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ActivityDialogBox(
+          controller: _controller,
+          onSave: saveNewActivity,  // TODO CHECK NON EMPTY AND LENGTH OF THE TEXT
+          onCancel: () => Navigator.of(context).pop(),
+          itemList: db.categoryList,
+          selectedDay: selectedDay,
+        );
+      },
+    );
+  }
 
+  // delete task
+  void deleteActivity(int index) {
+    setState(() {
+      db.toDoList.removeAt(index);
+    });
+    db.updateDataBase();
+  }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          showDialog(
-            context: context, 
-            builder: (context) {
-              return DialogBox(
-                controller: _controller,
-                onSave: saveNewTask,  // TODO CHECK NON EMPTY AND LENGTH OF THE TEXT
-                onCancel: () => Navigator.of(context).pop(),
-              );
-          });
-        },
-      ),
-      body: Column(
-        children: [
-          Container(
+  List<dynamic> activities = db.getActivitiesByDay(selectedDay);
+
+  return Scaffold(
+    body: Container(
+        child: Column(
+          children: [
+            Container(
+              height: 290,
               child: TableCalendar(
-                // locale: , // localization stuff
-                rowHeight: 50,
-                headerStyle: HeaderStyle(formatButtonVisible: false, titleCentered: true), // disable the additional button in the header
+                rowHeight: 35,
+                headerStyle: const HeaderStyle(formatButtonVisible: false, titleCentered: true),
                 availableGestures: AvailableGestures.all,
-                selectedDayPredicate: (day) => isSameDay(day, today),
-                focusedDay: today,
+                startingDayOfWeek: StartingDayOfWeek.sunday,
+                selectedDayPredicate: (day) => isSameDay(day, selectedDay),
+                focusedDay: selectedDay,
                 firstDay: DateTime.utc(2010, 10, 16),
                 lastDay: DateTime.utc(2030, 10, 16),
                 onDaySelected: _onDaySelected,
+                calendarStyle: const CalendarStyle(
+                  weekendTextStyle: TextStyle(color: Colors.orangeAccent),
+                  outsideTextStyle: TextStyle(color: Colors.grey),
+                ),
               ),
-              // color: Colors.yellow,
-              // child: Center(
-              //   child: Text(
-              //     'Calendar Tab Content',
-              //   ),
-              // ),
             ),
-          Text("selected day =" + today.toString().split(" ")[0]),
-        ],
+            Container(
+                height: 300,
+                child:
+                  (activities.isNotEmpty) 
+                  ?
+                    ActivitiesList(activities: activities)
+                  :
+                    Text("No activities for the selected day.")
+              ),
+          ],
+        ),
       ),
+    floatingActionButton: (selectedDay.isBefore(DateTime.now()))
+        ? FloatingActionButton(
+            onPressed: createNewActivity,
+            child: Icon(Icons.add),
+          )
+        : null,
     );
   }
+
+
 }
