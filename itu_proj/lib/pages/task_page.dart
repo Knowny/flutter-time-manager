@@ -41,6 +41,7 @@ class _TaskPageState extends State<TaskPage> {
   final _controller = TextEditingController();
 
   // todo format the time accordingly
+
   // * ADD/REMOVE HABIT TO/FROM FAVOURITES
   void addHabitToFavourites(int index) {
     setState(() {
@@ -61,7 +62,6 @@ class _TaskPageState extends State<TaskPage> {
     db.updateDataBase();
   }
 
-
   // * START/STOP HABIT TIMER
   void habitTimer(int index) {
     // check the current time
@@ -69,37 +69,49 @@ class _TaskPageState extends State<TaskPage> {
 
     int spentTime = db.habitList[index][3];
 
-    // start/stop the timer
-    setState(() {
-      db.habitList[index][2] = !db.habitList[index][2];
-    });
-    db.updateDataBase();
-
-    // if habit is active
-    if (db.habitList[index][2]) {
-      Timer.periodic(Duration(seconds: 1), (timer) {
-        setState(() {
-          // check if the user stopped the timer
-          if (!db.habitList[index][2]) {
-            timer.cancel();
-          }
-
-          var currentTime = DateTime.now();
-
-          // rewrite the time spent by calculating spent time + curr time - start time
-          db.habitList[index][3] = spentTime +
-              currentTime.second -
-              startTime.second +
-              60 * (currentTime.minute - startTime.minute) +
-              60 * 60 * (currentTime.hour - startTime.hour);
-
-          // check if the spentTime is bigger thank the durationTime
-          if ((db.habitList[index][3] >= (db.habitList[index][4]) * 60)) {
-            // set the habit state to completed
-            db.habitList[index][1] = true;
-          }
-        });
+    // * RESET TIMER <- (habitCompleted = true, habitActive = false)
+    if (db.habitList[index][1] && !db.habitList[index][2]) {
+      setState(() {
+        // habitCompleted
+        db.habitList[index][1] = false;
+        // timeSpent
+        db.habitList[index][3] = 0;
       });
+      db.updateDataBase();
+    } else {
+      // * OTHER TIMER FUNCTIONALITY
+      // start/stop the timer
+      setState(() {
+        db.habitList[index][2] = !db.habitList[index][2];
+      });
+      db.updateDataBase();
+
+      // if habit is active
+      if (db.habitList[index][2]) {
+        Timer.periodic(Duration(seconds: 1), (timer) {
+          setState(() {
+            // check if the user stopped the timer
+            if (!db.habitList[index][2]) {
+              timer.cancel();
+            }
+
+            var currentTime = DateTime.now();
+
+            // rewrite the time spent by calculating spent time + curr time - start time
+            db.habitList[index][3] = spentTime +
+                currentTime.second -
+                startTime.second +
+                60 * (currentTime.minute - startTime.minute) +
+                60 * 60 * (currentTime.hour - startTime.hour);
+
+            // check if the spentTime is bigger thank the durationTime
+            if ((db.habitList[index][3] >= (db.habitList[index][4]) * 60)) {
+              // set the habit state to completed
+              db.habitList[index][1] = true;
+            }
+          });
+        });
+      }
     }
   }
 
@@ -353,7 +365,8 @@ class _TaskPageState extends State<TaskPage> {
                         onTap: () {
                           habitTimer(index);
                         },
-                        addToFavouritesFunction: (context) => addHabitToFavourites(index),
+                        addToFavouritesFunction: (context) =>
+                            addHabitToFavourites(index),
                         editFunction: (context) => editHabit(index),
                         deleteFunction: (context) => deleteHabit(index),
                       );
