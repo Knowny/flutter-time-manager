@@ -30,7 +30,7 @@ class ToDoDatabase {
       ["Pass the ITU", false, false],
     ];
     // todo better formatting
-    // habitName, isCompleted, isHabitActive, timeSpent (sec), timeDuration (min), category, isFavourite
+    // habitName, isCompleted, isHabitActive, timeSpent (sec), timeDuration (min), isFavourite, category
     habitList = [
       ["Test the timer", false, false, 0, 1, false],
       ["Test the 2nd timer", false, false, 0, 2, false],

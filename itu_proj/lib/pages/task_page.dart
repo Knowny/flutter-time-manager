@@ -64,13 +64,13 @@ class _TaskPageState extends State<TaskPage> {
 
   // * START/STOP HABIT TIMER
   void habitTimer(int index) {
-    // check the current time
+    // get the start time
     var startTime = DateTime.now();
-
+    // get the time already spent
     int spentTime = db.habitList[index][3];
-
-    // * RESET TIMER <- (habitCompleted = true, habitActive = false)
+    // (habitCompleted = true, habitActive = false)
     if (db.habitList[index][1] && !db.habitList[index][2]) {
+      // * HABIT PAUSED AND COMPLETED -> RESET THE TIMER
       setState(() {
         // habitCompleted
         db.habitList[index][1] = false;
@@ -79,35 +79,45 @@ class _TaskPageState extends State<TaskPage> {
       });
       db.updateDataBase();
     } else {
-      // * OTHER TIMER FUNCTIONALITY
-      // start/stop the timer
+      // * HABIT NOT PAUSED AND COMPLETED
+      // start/stop timer
       setState(() {
+        // habitActive
         db.habitList[index][2] = !db.habitList[index][2];
       });
       db.updateDataBase();
 
-      // if habit is active
+      // used, because the time in db is stored in seconds, not milliseconds
+      var iterator = 0;
+      // check if habit is active
       if (db.habitList[index][2]) {
-        Timer.periodic(Duration(seconds: 1), (timer) {
+        Timer.periodic(Duration(milliseconds: 100), (timer) {
           setState(() {
             // check if the user stopped the timer
             if (!db.habitList[index][2]) {
               timer.cancel();
             }
-
+            // get the current time
             var currentTime = DateTime.now();
-
-            // rewrite the time spent by calculating spent time + curr time - start time
-            db.habitList[index][3] = spentTime +
-                currentTime.second -
-                startTime.second +
-                60 * (currentTime.minute - startTime.minute) +
-                60 * 60 * (currentTime.hour - startTime.hour);
-
-            // check if the spentTime is bigger thank the durationTime
-            if ((db.habitList[index][3] >= (db.habitList[index][4]) * 60)) {
-              // set the habit state to completed
-              db.habitList[index][1] = true;
+            // 100ms has passed
+            iterator++;
+            // if whole second passed, increment the time in the db
+            if (iterator >= 10) {
+              // rewrite the time spent by calculating spent time + curr time - start time
+              db.habitList[index][3] = spentTime +
+                  currentTime.second -
+                  startTime.second +
+                  60 * (currentTime.minute - startTime.minute) +
+                  60 * 60 * (currentTime.hour - startTime.hour);
+              iterator = 0;
+            }
+            // if the activity is not yet completed
+            if (db.habitList[index][1] == false) {
+              // check if the spentTime is bigger thank the durationTime
+              if ((db.habitList[index][3] >= (db.habitList[index][4]) * 60)) {
+                // set the habit state to completed
+                db.habitList[index][1] = true;
+              }
             }
           });
         });
