@@ -102,14 +102,20 @@ class HabitTile extends StatelessWidget {
                     children: [
                       CircularPercentIndicator(
                         radius: 32,
-                        percent:
-                            percentCompleted() < 1 ? percentCompleted() : 1,  // cap the percent to 1
+                        percent: percentCompleted() < 1
+                            ? percentCompleted()
+                            : 1, // cap the percent to 1
                         progressColor: Colors
                             .orange, //todo - suggestion -> the progress bar color should be the color of the category
                       ),
                       Center(
                         child: Icon(
-                          habitActive ? Icons.pause : Icons.play_arrow,
+                          // show the button icon based on habitActive and habitCompleted
+                          habitActive
+                              ? Icons.pause
+                              : habitCompleted
+                                  ? Icons.restart_alt
+                                  : Icons.play_arrow,
                         ),
                       ),
                     ],
@@ -144,7 +150,6 @@ class HabitTile extends StatelessWidget {
                         ' = ' +
                         (percentCompleted() * 100).toStringAsFixed(0) +
                         '%',
-                    // '2:00 / 10 = 20%',
                     style: const TextStyle(
                       color: Colors.grey,
                     ),

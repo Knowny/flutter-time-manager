@@ -40,12 +40,10 @@ class _TaskPageState extends State<TaskPage> {
   // * TEXT CONTROLLER
   final _controller = TextEditingController();
 
-  // todo calculate the progress percentage
-
-  // todo format the time to string
+  // todo format the time accordingly
 
   // * START/STOP HABIT TIMER
-  void startHabit(int index) {
+  void habitTimer(int index) {
     // check the current time
     var startTime = DateTime.now();
 
@@ -57,6 +55,7 @@ class _TaskPageState extends State<TaskPage> {
     });
     db.updateDataBase();
 
+    // if habit is active
     if (db.habitList[index][2]) {
       Timer.periodic(Duration(seconds: 1), (timer) {
         setState(() {
@@ -64,7 +63,7 @@ class _TaskPageState extends State<TaskPage> {
           if (!db.habitList[index][2]) {
             timer.cancel();
           }
-          
+
           var currentTime = DateTime.now();
 
           // rewrite the time spent by calculating spent time + curr time - start time
@@ -73,6 +72,12 @@ class _TaskPageState extends State<TaskPage> {
               startTime.second +
               60 * (currentTime.minute - startTime.minute) +
               60 * 60 * (currentTime.hour - startTime.hour);
+
+          // check if the spentTime is bigger thank the durationTime
+          if ((db.habitList[index][3] >= (db.habitList[index][4]) * 60)) {
+            // set the habit state to completed
+            db.habitList[index][1] = true;
+          }
         });
       });
     }
@@ -86,8 +91,7 @@ class _TaskPageState extends State<TaskPage> {
         return HabitDialogBox(
           // todo moore controllers
           controller: _controller,
-          onSave:
-              saveNewHabit, // TODO CHECK LENGTH OF THE TEXT (max - 20 characters? WWWWWWWWWWWWWWWWWWWW)
+          onSave: saveNewHabit,
           onCancel: () => Navigator.of(context).pop(),
         );
       },
@@ -147,7 +151,7 @@ class _TaskPageState extends State<TaskPage> {
   // * DELETE HABIT
   void deleteHabit(int index) {
     setState(() {
-      db.toDoList.removeAt(index);
+      db.habitList.removeAt(index);
     });
     db.updateDataBase();
   }
@@ -181,15 +185,37 @@ class _TaskPageState extends State<TaskPage> {
     db.updateDataBase();
   }
 
+  // * ADD/REMOVE TASK TO/FROM FAVOURITES
+  void addTaskToFavourites(int index) {
+    setState(() {
+      db.toDoList[index][2] = !db.toDoList[index][2];
+    });
+
+    // https://api.flutter.dev/flutter/dart-core/List/sort.html
+    // sort the list, so the favourites are before the non-favourites
+    db.toDoList.sort((a, b) {
+      if (a[2] && !b[2]) {
+        return -1; // a = true, b = false -> a should be before b
+      } else if (!a[2] && b[2]) {
+        return 1; // a = false, b = true -> b should be before a
+      } else {
+        return 0; // a = b -> dont change the order
+      }
+    });
+    db.updateDataBase();
+  }
+
   // * CREATE NEW TASK
   void createNewTask() {
     showDialog(
       context: context,
       builder: (context) {
         return DialogBox(
+          // text controller
           controller: _controller,
-          onSave:
-              saveNewTask, // TODO CHECK LENGTH OF THE TEXT (max - 20 characters? WWWWWWWWWWWWWWWWWWWW)
+          // save button
+          onSave: saveNewTask,
+          // cancel button
           onCancel: () => Navigator.of(context).pop(),
         );
       },
@@ -201,7 +227,8 @@ class _TaskPageState extends State<TaskPage> {
     String newTaskName = _controller.text;
     if (newTaskName.isNotEmpty) {
       setState(() {
-        db.toDoList.add([_controller.text, false]);
+        // taskName, isCompleted, isFavourite
+        db.toDoList.add([_controller.text, false, false]);
         _controller.clear();
       });
       Navigator.of(context).pop();
@@ -274,6 +301,7 @@ class _TaskPageState extends State<TaskPage> {
           ),
           Expanded(
             child: (selectorView == Selector.Tasks)
+
                 // * BUILD LIST - TASKS
                 ? ListView.builder(
                     itemCount: db.toDoList.length,
@@ -281,7 +309,10 @@ class _TaskPageState extends State<TaskPage> {
                       return ToDoTile(
                         taskName: db.toDoList[index][0],
                         taskCompleted: db.toDoList[index][1],
+                        taskFavourited: db.toDoList[index][2],
                         onChanged: (value) => checkBoxChanged(value, index),
+                        addToFavouritesFunction: (context) =>
+                            addTaskToFavourites(index),
                         editFunction: (context) => editTask(index),
                         deleteFunction: (context) => deleteTask(index),
                       );
@@ -299,9 +330,8 @@ class _TaskPageState extends State<TaskPage> {
                         timeSpent: db.habitList[index][3],
                         timeDuration: db.habitList[index][4],
                         onTap: () {
-                          startHabit(index);
+                          habitTimer(index);
                         },
-                        // onChanged: (value) => checkBoxChanged(value, index),
                         editFunction: (context) => editHabit(index),
                         deleteFunction: (context) => deleteHabit(index),
                       );

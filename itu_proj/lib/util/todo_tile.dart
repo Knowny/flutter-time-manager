@@ -5,7 +5,10 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 class ToDoTile extends StatelessWidget {
   final String taskName;
   final bool taskCompleted;
+  final bool taskFavourited;
+
   Function(bool?)? onChanged;
+  Function(BuildContext)? addToFavouritesFunction;
   Function(BuildContext)? editFunction;
   Function(BuildContext)? deleteFunction;
 
@@ -13,7 +16,9 @@ class ToDoTile extends StatelessWidget {
     super.key,
     required this.taskName,
     required this.taskCompleted,
+    required this.taskFavourited,
     required this.onChanged,
+    required this.addToFavouritesFunction,
     required this.editFunction,
     required this.deleteFunction,
   });
@@ -23,6 +28,19 @@ class ToDoTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: Slidable(
+        startActionPane: ActionPane(
+          motion: StretchMotion(),
+          extentRatio: 0.25,
+          children: [
+            // * ADD TO FAVOURITES OPTION
+            SlidableAction(
+              onPressed: addToFavouritesFunction,
+              icon: taskFavourited ? Icons.star : Icons.star_border,
+              backgroundColor: Colors.lightGreen,
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ],
+        ),
         endActionPane: ActionPane(
           motion: const StretchMotion(),
           children: [
@@ -44,15 +62,16 @@ class ToDoTile extends StatelessWidget {
         ),
         child: Container(
           padding: const EdgeInsets.all(16),
-          decoration: taskCompleted
-              ? BoxDecoration(
-                  color: Colors.grey.shade600,
-                  borderRadius: BorderRadius.circular(12),
-                )
-              : BoxDecoration(
-                  color: Theme.of(context).cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
+          decoration: BoxDecoration(
+            border: taskFavourited
+                ? Border.all(
+                    width: 2, color: Colors.lightGreen)
+                : null,
+            borderRadius: BorderRadius.circular(12),
+            color: taskCompleted
+                ? Colors.grey.shade600
+                : Theme.of(context).cardColor,
+          ),
           child: Row(
             children: [
               // * CHECKBOX

@@ -1,4 +1,4 @@
-/// author(s): xhusar11
+/// author(s): xhusar11en
 import 'package:flutter/material.dart';
 
 enum Selector { Tasks, Habits }

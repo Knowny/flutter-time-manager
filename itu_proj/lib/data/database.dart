@@ -24,16 +24,20 @@ class ToDoDatabase {
   final _myBox = Hive.box('mybox'); 
   // runs during the first ever app opening
   void createInitialData() {
-    // taskName, isCompleted
+    // taskName, isCompleted, isFavourite
     toDoList = [
-      ["Create the database", false],
-      ["Pass the ITU", false],
+      ["Create the database", false, false],
+      ["Pass the ITU", false, false],
     ];
-    // habitName, isCompleted, isHabitActive, timeSpent (sec), timeDuration (min), category
+    // todo better formatting
+    // habitName, isCompleted, isHabitActive, timeSpent (sec), timeDuration (min), category, isFavourite
     habitList = [
-      ["Code", false, false, 0, 30],
-      ["Excercise", false, false, 0, 20],
-      ["Meditate", false, false, 0, 10],
+      ["Test the timer", false, false, 0, 1, false],
+      ["Test the 2nd timer", false, false, 0, 2, false],
+      ["Code", false, false, 0, 30, false],
+      ["Excercise", false, false, 0, 20, false],
+      ["Meditate", false, false, 0, 10, false],
+      ["Code in Flutter", false, false, 0, 5, false],
     ];
     //["name", "category", start_time, end_time, duration, goal]
     ongoingActivity = [];
