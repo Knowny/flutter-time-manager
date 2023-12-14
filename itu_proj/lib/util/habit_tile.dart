@@ -14,7 +14,6 @@ class HabitTile extends StatelessWidget {
   final int timeDuration;
   final bool habitFavourited;
 
-  // Function(bool?)? onTap; // if started/paused/resumed ... how to stop entirely?
   final VoidCallback onTap;
   Function(BuildContext)? addToFavouritesFunction;
   Function(BuildContext)? editFunction;
@@ -34,26 +33,26 @@ class HabitTile extends StatelessWidget {
     required this.deleteFunction,
   });
 
-  // format seconds into hour:min:sec
-  String formatTime(int totalSeconds) {
-    String seconds = (totalSeconds % 60).toString();
-    String minutes = (totalSeconds / 60)
-        .toStringAsFixed(5); // 5 decimal places (for calculation and rounding)
+  // convert seconds(int) to HH:mm:ss(string) AND remove leading zeroes
+  String seconds2hhmmssFormated(int timeSeconds) {
+    int hours = timeSeconds ~/ 3600;
+    int minutes = (timeSeconds % 3600) ~/ 60;
+    int seconds = (timeSeconds % 3600) % 60;
 
-    // if seconds are 1 digit number, add a 0 in front of it
-    if (seconds.length == 1) {
-      seconds = '0' + seconds;
+    // HH:mm:ss format
+    String hhmmssTime = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    // variable for the formated time
+    String formattedTime;
+
+    if (hhmmssTime.startsWith('00:')) {
+      formattedTime = hhmmssTime.substring(3);
     }
-
-    // if minutes are 1 digit number
-    if (minutes[1] == '.') {
-      minutes =
-          minutes.substring(0, 1); // get the numbers before the decimal place
+    else if (hhmmssTime.startsWith('0')) {
+      formattedTime = hhmmssTime.substring(1);
+    } else {
+      formattedTime = hhmmssTime;
     }
-
-    // todo -> do a simmilar thing for hours
-
-    return minutes + ':' + seconds;
+    return formattedTime;
   }
 
   // calculate the percentage of the progress bar
@@ -103,8 +102,7 @@ class HabitTile extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             border: habitFavourited
-                ? Border.all(
-                    width: 2, color: Colors.orange)
+                ? Border.all(width: 2, color: Colors.orange)
                 : null,
             borderRadius: BorderRadius.circular(12),
             color: habitCompleted
@@ -165,9 +163,9 @@ class HabitTile extends StatelessWidget {
                   // * PROGRESS TEXT
                   Text(
                     // TODO
-                    formatTime(timeSpent) +
+                    seconds2hhmmssFormated(timeSpent) +
                         ' / ' +
-                        timeDuration.toString() +
+                        seconds2hhmmssFormated(timeDuration) +
                         ' = ' +
                         (percentCompleted() * 100).toStringAsFixed(0) +
                         '%',
