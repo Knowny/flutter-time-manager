@@ -21,14 +21,18 @@ class DialogBox extends StatelessWidget {
       backgroundColor: Colors.grey[850],
       content: SizedBox(
         height: 200,
-        child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        child:
+            Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+          // todo fix later
+          const Text('Task name:'),
           // * USER INPUT - TASK NAME
           TextField(
             controller: controller,
             decoration: const InputDecoration(
-              enabledBorder: OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+              enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey)),
               border: OutlineInputBorder(),
-              hintText: "Add a new task",
+              hintText: "Add a new Task",
             ),
           ),
           Row(

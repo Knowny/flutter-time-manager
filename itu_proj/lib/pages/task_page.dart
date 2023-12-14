@@ -37,8 +37,34 @@ class _TaskPageState extends State<TaskPage> {
     super.initState();
   }
 
+  // convert HH:mm:ss(string) to seconds(int)
+  int hhmmss2Seconds(String timeString) {
+    List<String> parts = timeString.split(':');
+
+    int hours = int.parse(parts[0]);
+    int minutes = int.parse(parts[1]);
+    int seconds = int.parse(parts[2]);
+
+    return ((hours * 3600) + (minutes * 60) + seconds);
+  }
+
+  // convert seconds(int) to HH:mm:ss(string)
+  String seconds2hhmmss(int timeSeconds) {
+    int hours = timeSeconds ~/ 3600;
+    int minutes = (timeSeconds % 3600) ~/ 60;
+    int seconds = (timeSeconds % 3600) % 60;
+
+    // HH:mm:ss format
+    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+  }
+
   // * TEXT CONTROLLER
   final _controller = TextEditingController();
+
+  // * Habit name controller
+  final _habitNameController = TextEditingController();
+  // * Habit duration controller
+  final _habitDurationController = TextEditingController();
 
   // todo format the time accordingly
 
@@ -113,8 +139,8 @@ class _TaskPageState extends State<TaskPage> {
             }
             // if the activity is not yet completed
             if (db.habitList[index][1] == false) {
-              // check if the spentTime is bigger thank the durationTime
-              if ((db.habitList[index][3] >= (db.habitList[index][4]) * 60)) {
+              // check if the spentTime(sec) is bigger thank the durationTime(sec)
+              if ((db.habitList[index][3] >= (db.habitList[index][4]))) {
                 // set the habit state to completed
                 db.habitList[index][1] = true;
               }
@@ -131,8 +157,8 @@ class _TaskPageState extends State<TaskPage> {
       context: context,
       builder: (context) {
         return HabitDialogBox(
-          // todo moore controllers
-          controller: _controller,
+          habitNameController: _habitNameController,
+          habitDurationController: _habitDurationController,
           onSave: saveNewHabit,
           onCancel: () => Navigator.of(context).pop(),
         );
@@ -142,16 +168,27 @@ class _TaskPageState extends State<TaskPage> {
 
   // * SAVE NEW HABIT
   void saveNewHabit() {
-    String newHabitName = _controller.text;
-    if (newHabitName.isNotEmpty) {
+    String newHabitName = _habitNameController.text;
+
+    int habitDuration = 0;
+
+    if (_habitDurationController.text.isNotEmpty) {
+      habitDuration = hhmmss2Seconds(_habitDurationController.text);
+    }
+
+    if ((newHabitName.isNotEmpty) && (habitDuration > 0)) {
       setState(() {
-        db.habitList.add([_controller.text, false]);
-        _controller.clear();
+        db.habitList.add(
+            [_habitNameController.text, false, false, 0, habitDuration, false]);
+        _habitNameController.clear();
+        _habitDurationController.clear();
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+    } else if ((newHabitName.isNotEmpty) && (habitDuration <= 0)) {
+      _showEmptyHabitDurationDialog(context);
     } else {
-      _showEmptyNameDialog(context); // todo dialog for the habit
+      _showEmptyHabitNameDialog(context);
     }
   }
 
@@ -206,6 +243,48 @@ class _TaskPageState extends State<TaskPage> {
         return AlertDialog(
           title: Text('Invalid task name.'),
           content: Text('Task name can not be empty.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // * EMPTY NAME ALERT - HABIT
+  void _showEmptyHabitNameDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Invalid habit name.'),
+          content: Text('Habit name can not be empty.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // * EMPTY DURATION ALERT - HABIT
+  void _showEmptyHabitDurationDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Set the habit duration.'),
+          content: Text('Habit duration can not be 00:00:00.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {

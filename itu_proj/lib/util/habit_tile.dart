@@ -58,7 +58,8 @@ class HabitTile extends StatelessWidget {
 
   // calculate the percentage of the progress bar
   double percentCompleted() {
-    return timeSpent / (timeDuration * 60);
+    // seconds / seconds
+    return timeSpent / timeDuration;
   }
 
   @override

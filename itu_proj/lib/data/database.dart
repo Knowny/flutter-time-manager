@@ -32,12 +32,12 @@ class ToDoDatabase {
     // todo better formatting
     // habitName, isCompleted, isHabitActive, timeSpent (sec), timeDuration (min), isFavourite, category
     habitList = [
-      ["Test the timer", false, false, 0, 1, false],
-      ["Test the 2nd timer", false, false, 0, 2, false],
-      ["Code", false, false, 0, 30, false],
-      ["Excercise", false, false, 0, 20, false],
-      ["Meditate", false, false, 0, 10, false],
-      ["Code in Flutter", false, false, 0, 5, false],
+      ["Test the timer", false, false, 0, 1*60, false],
+      ["Test the 2nd timer", false, false, 0, 2*60, false],
+      ["Code", false, false, 0, 30*60, false],
+      ["Excercise", false, false, 0, 20*60, false],
+      ["Meditate", false, false, 0, 10*60, false],
+      ["Code in Flutter", false, false, 0, 5*60, false],
     ];
     //["name", "category", start_time, end_time, duration, goal]
     ongoingActivity = [];
