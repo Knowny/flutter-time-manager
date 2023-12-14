@@ -194,36 +194,45 @@ class _TaskPageState extends State<TaskPage> {
 
   // * EDIT HABIT
   void editHabit(int index) {
-    String currentHabitName = db.toDoList[index][0];
-    _controller.text = currentHabitName;
+    String currentHabitName = db.habitList[index][0];
+    _habitNameController.text = currentHabitName;
+    String currentHabitDuration = seconds2hhmmss(db.habitList[index][4]);
+    _habitDurationController.text = currentHabitDuration;
 
     showDialog(
       context: context,
       builder: (context) {
-        return DialogBox(
-            controller: _controller,
+        return HabitDialogBox(
+            habitNameController: _habitNameController,
+            habitDurationController: _habitDurationController,
             onSave: () {
-              saveExistingHabit(index, _controller.text);
+              saveExistingHabit(index, _habitNameController.text,
+                  _habitDurationController.text);
             },
             onCancel: () {
               Navigator.of(context).pop();
-              _controller.clear();
+              _habitNameController.clear();
+              _habitDurationController.clear();
             });
       },
     );
   }
 
   // * SAVE EXISTING HABIT
-  void saveExistingHabit(int index, String newName) {
-    if (newName.isNotEmpty) {
+  void saveExistingHabit(int index, String newName, String newDuration) {
+    if ((newName.isNotEmpty) && (hhmmss2Seconds(newDuration) > 0)) {
       setState(() {
-        db.toDoList[index][0] = newName;
-        _controller.clear();
+        db.habitList[index][0] = newName;
+        db.habitList[index][4] = hhmmss2Seconds(newDuration);
+        _habitNameController.clear();
+        _habitDurationController.clear();
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+    } else if ((newName.isNotEmpty) && (hhmmss2Seconds(newDuration) <= 0)) {
+      _showEmptyHabitDurationDialog(context);
     } else {
-      _showEmptyNameDialog(context); // todo dialog for habit
+      _showEmptyHabitNameDialog(context);
     }
   }
 
