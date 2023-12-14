@@ -56,7 +56,7 @@ class _CalendarPageState extends State<CalendarPage> {
           controller: _controller,
           onSave: saveNewActivity,  // TODO CHECK NON EMPTY AND LENGTH OF THE TEXT
           onCancel: () => Navigator.of(context).pop(),
-          itemList: db.categoryList,
+          db: db,
           selectedDay: selectedDay,
         );
       },
