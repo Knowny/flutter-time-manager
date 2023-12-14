@@ -65,7 +65,7 @@ class ToDoTile extends StatelessWidget {
           decoration: BoxDecoration(
             border: taskFavourited
                 ? Border.all(
-                    width: 2, color: Colors.lightGreen)
+                    width: 2, color: Colors.orange)
                 : null,
             borderRadius: BorderRadius.circular(12),
             color: taskCompleted

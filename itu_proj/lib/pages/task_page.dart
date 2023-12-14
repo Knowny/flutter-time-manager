@@ -41,6 +41,26 @@ class _TaskPageState extends State<TaskPage> {
   final _controller = TextEditingController();
 
   // todo format the time accordingly
+  // * ADD/REMOVE HABIT TO/FROM FAVOURITES
+  void addHabitToFavourites(int index) {
+    setState(() {
+      db.habitList[index][5] = !db.habitList[index][5];
+    });
+
+    // https://api.flutter.dev/flutter/dart-core/List/sort.html
+    // sort the list, so the favourites are before the non-favourites
+    db.habitList.sort((a, b) {
+      if (a[5] && !b[5]) {
+        return -1; // a = true, b = false -> a should be before b
+      } else if (!a[5] && b[5]) {
+        return 1; // a = false, b = true -> b should be before a
+      } else {
+        return 0; // a = b -> dont change the order
+      }
+    });
+    db.updateDataBase();
+  }
+
 
   // * START/STOP HABIT TIMER
   void habitTimer(int index) {
@@ -329,9 +349,11 @@ class _TaskPageState extends State<TaskPage> {
                         habitActive: db.habitList[index][2],
                         timeSpent: db.habitList[index][3],
                         timeDuration: db.habitList[index][4],
+                        habitFavourited: db.habitList[index][5],
                         onTap: () {
                           habitTimer(index);
                         },
+                        addToFavouritesFunction: (context) => addHabitToFavourites(index),
                         editFunction: (context) => editHabit(index),
                         deleteFunction: (context) => deleteHabit(index),
                       );
