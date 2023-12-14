@@ -17,7 +17,10 @@ class TaskPage extends StatefulWidget {
   State<TaskPage> createState() => _TaskPageState();
 }
 
-class _TaskPageState extends State<TaskPage> {
+// * AUTOMATIC KEEP ALIVE
+//https://stackoverflow.com/questions/65657495/flutter-debuglifecyclestate-elementlifecycle-defunct-is-not-true
+
+class _TaskPageState extends State<TaskPage> with AutomaticKeepAliveClientMixin {
   // select tasks
   Selector selectorView = Selector.Tasks;
 
@@ -36,6 +39,9 @@ class _TaskPageState extends State<TaskPage> {
     }
     super.initState();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 
   // convert HH:mm:ss(string) to seconds(int)
   int hhmmss2Seconds(String timeString) {
@@ -414,6 +420,7 @@ class _TaskPageState extends State<TaskPage> {
   // * BUILD PAGE
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: Column(
         children: [
