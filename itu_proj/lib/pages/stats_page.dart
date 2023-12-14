@@ -44,11 +44,8 @@ class _StatsPageState extends State<StatsPage> {
             ),
           ),
         Expanded(
-          child: (selectorView == Selector.Today)
-          ? 
-            MyPieChart(db)
-          :
-            MyPieChart(db)
+          child: 
+            MyPieChart(db: db, selectorView: selectorView)
           )
       ]),
     ); 

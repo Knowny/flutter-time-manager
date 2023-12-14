@@ -26,22 +26,22 @@ class ToDoDatabase {
 
     activityList = [
     // ["ACTIVITY_NAME", "CATEGORY", date(dateTime), timeSpent (seconds)]
-      ["Learning Japanese", "School", DateTime.now(), 60*30],
-      ["Push Ups", "Sport", DateTime.now(), 60*10],
-      ["Watching Spidrman", "Free Time", DateTime.now(), 60*120],
-      ["Talking with Jessica", "Socialising", DateTime.now(), 60*5],
-      ["Watching Witchur", "Free Time", DateTime.now(), 60*30],
-      ["Talking with Jamal", "Socialising", DateTime.now(), 60*10],
-      ["Watching Witchur", "Free Time", DateTime.now(), 60*30],
-      ["Talking with Ferdinand", "Socialising", DateTime.now(), 60*3],
+      ["Learning Japanese", "School", DateTime.now(), const Duration(minutes: 30)],
+      ["Push Ups", "Sport", DateTime.now(), const Duration(minutes: 10)],
+      ["Watching Spidrman", "Free Time", DateTime.now(), const Duration(hours: 2)],
+      ["Talking with Jessica", "Socialising", DateTime.now(), const Duration(minutes: 5)],
+      ["Watching Witchur", "Free Time", DateTime.now(), const Duration(minutes: 30)],
+      ["Talking with Jamal", "Socialising", DateTime.now(), const Duration(minutes: 10)],
+      ["Watching Witchur", "Free Time", DateTime.now(), const Duration(minutes: 30)],
+      ["Talking with Ferdinand", "Socialising", DateTime.now(), const Duration(minutes: 3)],
     ];
     
     categoryList = [
     // ["NAME","COLOR"]
-      ["School", Colors.red, 60*30],
-      ["Sport", Colors.blue, 60*10],
-      ["Free Time", Colors.yellow, 60*120],
-      ["Socialising", Colors.orange, 60*5]
+      ["School", Colors.red],
+      ["Sport", Colors.blue],
+      ["Free Time", Colors.yellow],
+      ["Socialising", Colors.orange]
     ];
   }
 
@@ -59,6 +59,8 @@ class ToDoDatabase {
     _myBox.put("CATEGORYLIST", categoryList);
   }
 
+  // author: xjesko
+
   Color getCategoryColor(String key){
     for (var category in categoryList){
       if (category[0] == key){
@@ -68,12 +70,22 @@ class ToDoDatabase {
     return Colors.grey;
   }
 
-  num getTotalTimeSpent(){
-    num timeSpent = 0;
-    for (var category in categoryList) {
-      timeSpent += category[2];
+  double getTotalTimeSpent(){
+    double totalTime = 0;
+    for (var index = 0; index < activityList.length; index++) {
+      totalTime += durationToMinutes(activityList[index][3]);
     }
-    return timeSpent;
+    return totalTime;
+  }
+
+  double getCategoryTime(String name){
+    double totalTime = 0;
+    for (var index = 0; index < activityList.length; index++) {
+      if (activityList[index][1] == name ){
+      totalTime += durationToMinutes(activityList[index][3]);
+      }
+    }
+    return totalTime;
   }
 
   List<dynamic> getActivitiesByDay(DateTime when) {
@@ -83,21 +95,21 @@ class ToDoDatabase {
     }).toList();
   }
 
-  num getTodayTotal(String name){
-    num totalTime = 0;
+  double getTodayTotal(String name){
+    double totalTime = 0;
     for (var index = 0; index < activityList.length; index++) {
       if (activityList[index][1] == name && isSameDay(activityList[index][2], DateTime.now())){
-        totalTime += activityList[index][3];
+        totalTime += durationToMinutes(activityList[index][3]);
       }
     }
     return totalTime;
   }
 
-  num getThisWeekTotal(String name){
-    num totalTime = 0;
+  double getThisWeekTotal(String name){
+    double totalTime = 0;
     for (var index = 0; index < activityList.length; index++) {
       if (activityList[index][1] == name && isSameWeek(activityList[index][2], DateTime.now())){
-        totalTime += activityList[index][3];
+        totalTime += durationToMinutes(activityList[index][3]);
       }
     }
     return totalTime;
@@ -109,11 +121,11 @@ class ToDoDatabase {
     return mondayDate1.day == mondayDate2.day;
   }
 
-  num getThisMonthTotal(String name){
-    num totalTime = 0;
+  double getThisMonthTotal(String name){
+    double totalTime = 0;
     for (var index = 0; index < activityList.length; index++) {
       if (activityList[index][1] == name && isSameMonth(activityList[index][2], DateTime.now())){
-        totalTime += activityList[index][3];
+        totalTime += durationToMinutes(activityList[index][3]);
       }
     }
     return totalTime;
@@ -121,6 +133,10 @@ class ToDoDatabase {
 
   bool isSameMonth(DateTime date1, DateTime date2) {
     return date1.year == date2.year && date1.month == date2.month;
+  }
+
+  double durationToMinutes(Duration duration) {
+    return duration.inSeconds / 60.0;
   }
 
 }

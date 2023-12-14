@@ -38,25 +38,14 @@ class _CalendarPageState extends State<CalendarPage> {
     }
     super.initState();
   }
-   
-  void saveNewActivity() {
-    setState(() {
-      db.toDoList.add([_controller.text, false]);
-      _controller.clear();
-    });
-    Navigator.of(context).pop();
-    db.updateDataBase();
-  }
+  
   void createNewActivity() {
-    //TODO CHECK SO THE TIME IS NOT HIGHER THAT NOW()
     showDialog(
       context: context,
       builder: (context) {
         return ActivityDialogBox(
           controller: _controller,
-          onSave: saveNewActivity,  // TODO CHECK NON EMPTY AND LENGTH OF THE TEXT
           onCancel: () => Navigator.of(context).pop(),
-          db: db,
           selectedDay: selectedDay,
         );
       },
@@ -70,6 +59,7 @@ class _CalendarPageState extends State<CalendarPage> {
     });
     db.updateDataBase();
   }
+  
   @override
   Widget build(BuildContext context) {
   List<dynamic> activities = db.getActivitiesByDay(selectedDay);
@@ -103,7 +93,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   ?
                     ActivitiesList(activities: activities)
                   :
-                    Text("No activities for the selected day.")
+                    const Text("No activities for the selected day.")
               ),
           ],
         ),

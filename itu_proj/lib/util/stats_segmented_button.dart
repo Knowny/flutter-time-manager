@@ -30,7 +30,6 @@ class _SingleChoiceState extends State<SingleChoice> {
     return SegmentedButton<Selector>(
       
       style: ButtonStyle(
-        
         backgroundColor: MaterialStateProperty.resolveWith<Color>(
           (Set<MaterialState> states) {
             if (states.contains(MaterialState.selected)) {
@@ -39,6 +38,7 @@ class _SingleChoiceState extends State<SingleChoice> {
             return Colors.grey.shade800;
           },
         ),
+        minimumSize: MaterialStateProperty.all(Size(80,40)),
       ),
       segments: const <ButtonSegment<Selector>>[
         ButtonSegment<Selector>(
