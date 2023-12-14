@@ -13,6 +13,7 @@ import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/category_pick.dart';
 import 'package:itu_proj/util/timer_buttons.dart';
+//import 'dart:async';
 ///--------------------------------------------------------------
 ///                     CLASS TIMER PAGE
 ///--------------------------------------------------------------
@@ -23,7 +24,7 @@ class TimerPage extends StatefulWidget {
   State<TimerPage> createState() => _TimerPageState();
 }
 /// TickerProviderStateMixin for Animation controller vsync
-class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
+class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   ///--------------------------------------------------------------
   ///                          db
   ///--------------------------------------------------------------
@@ -35,6 +36,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
   ///                     VARIABLES
   ///--------------------------------------------------------------
   late AnimationController controller;
+
   int minutes = 0;
   String categoryPickedName = "";
 
@@ -44,6 +46,8 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
   bool activitySaved = false;
   double progress = 1.0;
   Duration lastTimer = Duration.zero;
+
+  String activityName = "";
 
 
   ///--------------------------------------------------------------
@@ -72,6 +76,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
     super.initState();
 
     controller = AnimationController(vsync: this, duration: const Duration(seconds: 0));
+
     ///--------------------------------------------------------------
     ///                   CONTROLLER LISTENER
     ///--------------------------------------------------------------
@@ -110,10 +115,12 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
       }
     });
   }
+  @override
+  bool get wantKeepAlive => true;
 
   void activityCreate(){
     final snackBar = SnackBar(
-      content: Text('Activity saved', 
+      content: Text('$categoryPickedName for $lastTimer saved ', 
         style: TextStyle(color: Colors.grey.shade900.withOpacity(1.0)),
       ),
       backgroundColor: Colors.grey.withOpacity(0.8),
@@ -129,12 +136,14 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
         snackBar
       );
     }
+    db.ongoingActivity.clear();
   }
   ///--------------------------------------------------------------
   ///                     BUILD
   ///--------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       backgroundColor: Colors.grey[850],
       body:  Column(
@@ -142,18 +151,32 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
           Expanded(
             child: Column(
               children: [
-                ///--------------------------------------------------------------
-                ///                     TOP TEXT
-                ///--------------------------------------------------------------
-                Padding(
+                //--------------------------------------------------------------
+                //                  TIMER MODE PICKER
+                //--------------------------------------------------------------
+                 Padding(
                   padding: const EdgeInsets.all(40),
-                  child: Text(
-                    "",
-                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      if(isIncremental){
+                        setState(() {
+                          isIncremental = false;
+                          minutes = 0;
+                        });
+                        
+                      }else{
+                      setState(() {
+                          isIncremental = true;
+                        });
+                      }
+                    },
+                    child: RoundButton(icon: isIncremental ? Icons.timer : Icons.timelapse),
+                  )
                 ),
-              ///--------------------------------------------------------------
-              ///                     TIMER CIRCLE
-              ///--------------------------------------------------------------
+    
+              //--------------------------------------------------------------
+              //                     TIMER CIRCLE
+              //--------------------------------------------------------------
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -203,17 +226,17 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
             ),
             
           ),
-          ///--------------------------------------------------------------
-          ///                     BUTTONS
-          ///--------------------------------------------------------------
+          //--------------------------------------------------------------
+          //                     BUTTONS
+          //--------------------------------------------------------------
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 40),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ///--------------------------------------------------------------
-                ///                    PLAY/PAUSE
-                ///--------------------------------------------------------------
+                //--------------------------------------------------------------
+                //                    PLAY/PAUSE
+                //--------------------------------------------------------------
                 GestureDetector(
                   onTap: () {
                     if(!isIncremental && controller.duration == Duration.zero){ //decrementing from 0
@@ -287,9 +310,9 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                     icon: isRunning ? Icons.pause : Icons.play_arrow,
                     )
                 ),
-                ///--------------------------------------------------------------
-                ///                     STOP
-                ///--------------------------------------------------------------
+                //--------------------------------------------------------------
+                //                     STOP
+                //--------------------------------------------------------------
                 GestureDetector(
                   onTap:() {
                     controller.reset();
@@ -303,9 +326,9 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                     icon: Icons.stop
                   ),
                 ),
-                ///--------------------------------------------------------------
-                ///                     RESET
-                ///--------------------------------------------------------------
+                //--------------------------------------------------------------
+                //                     RESET
+                //--------------------------------------------------------------
                 GestureDetector(
                   onTap: () {
                     if(categoryPickedName != "" && lastTimer != Duration.zero){
@@ -330,26 +353,9 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                     
                   },
                   child: const RoundButton(icon: Icons.restart_alt_rounded),
-                ),
-                ///--------------------------------------------------------------
-                ///                     TIMER MODE
-                ///--------------------------------------------------------------
-                GestureDetector(
-                  onTap: () {
-                    if(isIncremental){
-                      setState(() {
-                        isIncremental = false;
-                        minutes = 0;
-                      });
-                      
-                    }else{
-                     setState(() {
-                        isIncremental = true;
-                      });
-                    }
-                  },
-                  child: RoundButton(icon: isIncremental ? Icons.timer : Icons.timelapse),
                 )
+                
+                
               ],
             ),
           )
@@ -360,4 +366,3 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
 
 
 }
-

@@ -14,6 +14,7 @@ class ToDoDatabase {
   List toDoList = [];
   List activityList = [];
   List categoryList = [];
+  List ongoingActivity = [];
 
   // refference the box
   final _myBox = Hive.box('mybox'); 
@@ -23,6 +24,8 @@ class ToDoDatabase {
       ["Create the database", false],
       ["Pass the ITU", false],
     ];
+    //["name", "category", start_time, end_time, duration, goal]
+    ongoingActivity = [];
 
     activityList = [
     // ["ACTIVITY_NAME", "CATEGORY", date(dateTime), timeSpent (seconds)]
