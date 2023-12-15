@@ -68,7 +68,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
   @override
   void initState() {
     // 1st time ever opening app -> create default data
-    if (_myBox.get("TODOLIST") == null) {
+    if (_myBox.get("ACTIVITYLIST") == null) {
       db.createInitialData();
     } else {
       // data already exists

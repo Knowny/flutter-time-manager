@@ -19,7 +19,7 @@ class _StatsPageState extends State<StatsPage> {
 
   @override
   void initState() {
-    if (_myBox.get("TODOLIST") == null) {
+    if (_myBox.get("CATEGORYLIST") == null) {
       db.createInitialData();
     } else {
       db.loadData();

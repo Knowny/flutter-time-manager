@@ -6,7 +6,6 @@ import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/category_pick.dart';
 import 'package:itu_proj/util/category_tile.dart';
 import 'package:itu_proj/util/my_button.dart';
-import 'dart:async';
 
 class ActivityDialogBox extends StatefulWidget {
   final dynamic controller;
@@ -37,7 +36,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   @override
   void initState() {
     // 1st time ever opening app -> create default data
-    if (_myBox.get("TODOLIST") == null) {
+    if (_myBox.get("ACTIVITYLIST") == null) {
       db.createInitialData();
     } else {
       // data already exists
@@ -244,6 +243,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     }else {
       List<dynamic> newActivity = [widget.controller.text, categoryPickedName, newEnd, calculateDuration(startTime, endTime)];
       setState(() {
+        print(newActivity);
         if (widget.activity.isEmpty){
           db.activityList.add(newActivity);
         } else {

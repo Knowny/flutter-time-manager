@@ -31,7 +31,7 @@ class _CalendarPageState extends State<CalendarPage> {
   @override
   void initState() {
     // 1st time ever opening app -> create default data
-    if (_myBox.get("TODOLIST") == null) {
+    if (_myBox.get("ACTIVITYLIST") == null) {
       db.createInitialData();
     } else {
       // data already exists
