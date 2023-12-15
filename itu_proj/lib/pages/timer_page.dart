@@ -389,6 +389,9 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
               visible: (controller.isDismissed && !isPaused),
               child:GestureDetector(
                 onTap: () {
+                  setState(() {
+                    minutes = 0;
+                  });
                   if(categoryPickedName != "" && lastTimer != Duration.zero){
                       if (controller.isDismissed && !isIncremental){
                       controller.duration = lastTimer;
