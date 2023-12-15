@@ -48,71 +48,161 @@ class _CalendarPageState extends State<CalendarPage> {
           controller: _controller,
           onCancel: () => Navigator.of(context).pop(),
           selectedDay: selectedDay,
+          saveActivity: putActivityToDatabase,
         );
       },
     );
   }
 
+  void putActivityToDatabase(List<dynamic> newActivity, bool isNew, int? index){
+    setState(() {
+        if (isNew){
+          db.activityList.add(newActivity);
+          _activityAddedSnackBar(context);
+        } else {
+          if (index != null) {
+            db.activityList[index] = newActivity;
+            _activityEditedSnackBar(context);
+          }
+        }
+      }
+    );
+    _controller.clear();
+    db.updateDataBase();
+    Navigator.of(context).pop();
+  }
+
   void editActivity(String name) {
-    showDialog(
+    Future dialogResult = showDialog(
       context: context,
       builder: (context) {
         return ActivityDialogBox(
           controller: _controller,
           onCancel: () => Navigator.of(context).pop(),
           selectedDay: selectedDay,
+          saveActivity: putActivityToDatabase,
+          deleteActivity: deleteActivityFromDatabase,
           activity: db.getActivity(name),
         );
+
       },
     );
+    dialogResult.then((result) {
+    if (result != null && result == false) {
+      _controller.clear();
+    }
+    });
+  }
+
+  void deleteActivityFromDatabase(List<dynamic> activityToDelete){
+    setState(() {
+      db.activityList.remove(activityToDelete);
+    });
+    _activityDeletedSnackBar(context);
+    db.updateDataBase();
+    _controller.clear();
+    Navigator.of(context).pop();
   }
   
   @override
   Widget build(BuildContext context) {
-  List<dynamic> activities = db.getActivitiesByDay(selectedDay);
+    List<dynamic> activities = db.getActivitiesByDay(selectedDay);
 
-  return Scaffold(
-    body: Container(
-        child: Column(
-          children: [
-            Container(
-              height: 290,
-              child: TableCalendar(
-                rowHeight: 35,
-                headerStyle: const HeaderStyle(formatButtonVisible: false, titleCentered: true),
-                availableGestures: AvailableGestures.all,
-                startingDayOfWeek: StartingDayOfWeek.sunday,
-                selectedDayPredicate: (day) => isSameDay(day, selectedDay),
-                focusedDay: selectedDay,
-                firstDay: DateTime.utc(2010, 10, 16),
-                lastDay: DateTime.utc(2030, 10, 16),
-                onDaySelected: _onDaySelected,
-                calendarStyle: const CalendarStyle(
-                  weekendTextStyle: TextStyle(color: Colors.orangeAccent),
-                  outsideTextStyle: TextStyle(color: Colors.grey),
+    return Scaffold(
+      body: SingleChildScrollView(
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(bottom: 15),
+                child: SizedBox(
+                  height: 290,
+                  width: 325,
+                  child: TableCalendar(
+                    rowHeight: 35,
+                    headerStyle: const HeaderStyle(formatButtonVisible: false, titleCentered: true),
+                    availableGestures: AvailableGestures.all,
+                    startingDayOfWeek: StartingDayOfWeek.sunday,
+                    selectedDayPredicate: (day) => isSameDay(day, selectedDay),
+                    focusedDay: selectedDay,
+                    firstDay: DateTime.utc(2010, 10, 16),
+                    lastDay: DateTime.utc(2030, 10, 16),
+                    onDaySelected: _onDaySelected,
+                    calendarStyle: const CalendarStyle(
+                      weekendTextStyle: TextStyle(color: Colors.orangeAccent),
+                      outsideTextStyle: TextStyle(color: Colors.grey),
+                    ),
+                  ),
                 ),
               ),
-            ),
-            Container(
+              SizedBox(
                 height: 300,
-                child:
-                  (activities.isNotEmpty) 
-                  ?
-                    ActivitiesList(activities: activities, editActivity: editActivity)
-                  :
-                    const Text("No activities for the selected day.")
+                child: (activities.isNotEmpty)
+                    ? ActivitiesList(
+                        activities: db.getActivitiesByDay(selectedDay),
+                        editActivity: editActivity,
+                      )
+                    : const Text("No activities for the selected day."),
               ),
-          ],
+            ],
+          ),
         ),
       ),
-    floatingActionButton: (selectedDay.isBefore(DateTime.now().add(const Duration(days: 1))))
-        ? FloatingActionButton(
-            onPressed: createNewActivity,
-            child: Icon(Icons.add),
-          )
-        : null,
+      floatingActionButton: (selectedDay.isBefore(DateTime.now().add(const Duration(days: 1))))
+          ? FloatingActionButton(
+              onPressed: createNewActivity,
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 
+  // activity created notify
+  void _activityAddedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Task added successfully',
+          style: TextStyle(color: Colors.grey.shade900),
+        ),
+        backgroundColor: Colors.lightGreen.withOpacity(0.8),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        width: 220.0,
+      ),
+    );
+  }
 
+  // activity edited notify
+  void _activityEditedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Task edited successfully',
+          style: TextStyle(color: Colors.grey.shade900),
+        ),
+        backgroundColor: Colors.grey.shade300.withOpacity(0.8),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        width: 220.0,
+      ),
+    );
+  }
+
+  // activity deleted notify
+  void _activityDeletedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Task deleted successfully',
+          style: TextStyle(color: Colors.grey.shade200),
+        ),
+        backgroundColor: Colors.red.withOpacity(0.8),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        width: 220.0,
+      ),
+    );
+  }
 }

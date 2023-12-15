@@ -101,7 +101,7 @@ class _MyPieChartState extends State<MyPieChart> {
         Text(
           (touchedIndex == -1 ? "Total time" : widget.db.categoryList[touchedIndex][0]) + "\n" + 
           formatDuration(
-            touchedIndex == -1 ? widget.db.getTotalTimeSpent() : spots[touchedIndex].y,
+            touchedIndex == -1 ? getTotalTimeSpent() : spots[touchedIndex].y,
           ),
           style: const TextStyle(fontSize: 20),
 
@@ -147,6 +147,14 @@ class _MyPieChartState extends State<MyPieChart> {
     String secondsString = remainingSeconds.toString().padLeft(2, '0');
 
     return '$hoursString:$minutesString:$secondsString';
+  }
+
+  double getTotalTimeSpent(){
+    double totalTime = 0;
+    for (var spot in spots) {
+      totalTime += spot.y;
+    }
+    return totalTime;
   }
 
 }

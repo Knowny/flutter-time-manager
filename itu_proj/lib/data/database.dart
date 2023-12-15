@@ -110,14 +110,6 @@ class ToDoDatabase {
     return Colors.grey;
   }
 
-  double getTotalTimeSpent(){
-    double totalTime = 0;
-    for (var index = 0; index < activityList.length; index++) {
-      totalTime += durationToMinutes(activityList[index][3]);
-    }
-    return totalTime;
-  }
-
   double getCategoryTime(String name){
     double totalTime = 0;
     for (var index = 0; index < activityList.length; index++) {
