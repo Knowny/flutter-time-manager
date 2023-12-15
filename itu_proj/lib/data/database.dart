@@ -61,6 +61,15 @@ class ToDoDatabase {
 
   // author: xjesko
 
+  List<dynamic> getActivity(String name){
+    for (var activity in activityList){
+      if (activity[0] == name){
+        return activity;
+      }
+    }
+    return [];
+  }
+
   Color getCategoryColor(String key){
     for (var category in categoryList){
       if (category[0] == key){

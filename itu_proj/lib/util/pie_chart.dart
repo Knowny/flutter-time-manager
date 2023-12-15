@@ -74,6 +74,10 @@ class _MyPieChartState extends State<MyPieChart> {
       children: [
         PieChart(
           PieChartData(
+            borderData: FlBorderData(
+              show: false,
+              border: Border.all(color: Colors.black, width: 15.0)
+            ),
             pieTouchData: PieTouchData(
               touchCallback: (FlTouchEvent event, pieTouchResponse) {
                 setState(() {
@@ -88,9 +92,6 @@ class _MyPieChartState extends State<MyPieChart> {
                   }
                 });
               },
-            ),
-            borderData: FlBorderData(
-              show: false,
             ),
             sectionsSpace: 0,
             centerSpaceRadius: 100.0,
@@ -111,7 +112,18 @@ class _MyPieChartState extends State<MyPieChart> {
   }
 
   List<PieChartSectionData> showingSections(List<FlSpot> spots, List<Color> colors) {
-    //TODO IF EMPTY SHOW JUST LINE
+    if (spots.isEmpty && colors.isEmpty) {
+      return [
+        PieChartSectionData(
+          color: Colors.grey,
+          value: 1.0,
+          title: "",
+          radius: 50.0,
+          borderSide: const BorderSide(color: Colors.black, width: 0.5),
+        ),
+      ];
+    }
+
     return List.generate(
       spots.length,
       (index) => PieChartSectionData(
@@ -119,34 +131,13 @@ class _MyPieChartState extends State<MyPieChart> {
         value: spots[index].y,
         title: "",
         radius: 50.0,
+        borderSide: const BorderSide(color: Colors.black, width: 1),
       ),
     );
   }
-  //  List<PieChartSectionData> showingSections(List<FlSpot> spots, List<Color> colors) {
-  //   if (spots.isEmpty && colors.isEmpty) {
-  //     return [
-  //       PieChartSectionData(
-  //         color: Colors.grey,
-  //         value: 1.0,
-  //         title: "",
-  //         radius: 50.0,
-  //       ),
-  //     ];
-  //   }
-
-  //   return List.generate(
-  //     spots.length,
-  //     (index) => PieChartSectionData(
-  //       color: colors[index],
-  //       value: spots[index].y,
-  //       title: "",
-  //       radius: 50.0,
-  //     ),
-  //   );
-  // }
 
   String formatDuration(double minutes) {
-    int totalSeconds = (minutes * 60).round(); // Convert minutes to seconds
+    int totalSeconds = (minutes * 60).round();
     int hours = totalSeconds ~/ 3600;
     int minutesPart = (totalSeconds ~/ 60) % 60;
     int remainingSeconds = totalSeconds % 60;

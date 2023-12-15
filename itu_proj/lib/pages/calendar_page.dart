@@ -18,6 +18,7 @@ class _CalendarPageState extends State<CalendarPage> {
   final _myBox = Hive.box('mybox');
   ToDoDatabase db = ToDoDatabase();
 
+  //midnight of that day
   DateTime selectedDay = DateTime.now();
 
   final _controller = TextEditingController();
@@ -52,12 +53,18 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  // delete task
-  void deleteActivity(int index) {
-    setState(() {
-      db.toDoList.removeAt(index);
-    });
-    db.updateDataBase();
+  void editActivity(String name) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return ActivityDialogBox(
+          controller: _controller,
+          onCancel: () => Navigator.of(context).pop(),
+          selectedDay: selectedDay,
+          activity: db.getActivity(name),
+        );
+      },
+    );
   }
   
   @override
@@ -91,14 +98,14 @@ class _CalendarPageState extends State<CalendarPage> {
                 child:
                   (activities.isNotEmpty) 
                   ?
-                    ActivitiesList(activities: activities)
+                    ActivitiesList(activities: activities, editActivity: editActivity)
                   :
                     const Text("No activities for the selected day.")
               ),
           ],
         ),
       ),
-    floatingActionButton: (selectedDay.isBefore(DateTime.now()))
+    floatingActionButton: (selectedDay.isBefore(DateTime.now().add(const Duration(days: 1))))
         ? FloatingActionButton(
             onPressed: createNewActivity,
             child: Icon(Icons.add),
