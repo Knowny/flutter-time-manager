@@ -13,7 +13,7 @@ var colorMap = {
 
 class ToDoDatabase {
   // * TASK LIST
-  List toDoList = [];
+  List taskList = [];
   List activityList = [];
   List categoryList = [];
   List ongoingActivity = [];
@@ -25,7 +25,7 @@ class ToDoDatabase {
   // runs during the first ever app opening
   void createInitialData() {
     // taskName, isCompleted, isFavourite
-    toDoList = [
+    taskList = [
       ["Create the database", false, false],
       ["Pass the ITU", false, false],
     ];
@@ -65,7 +65,7 @@ class ToDoDatabase {
 
   // load the data from db
   void loadData() {
-    toDoList = _myBox.get("TODOLIST");  // TODO RENAME TO TASKLIST
+    taskList = _myBox.get("TASKLIST");  // TODO RENAME TO TASKLIST
     habitList = _myBox.get("HABITLIST");
     activityList = _myBox.get("ACTIVITYLIST");
     categoryList = _myBox.get("CATEGORYLIST");
@@ -73,7 +73,7 @@ class ToDoDatabase {
 
   // update the db
   void updateDataBase(){
-    _myBox.put("TODOLIST", toDoList);
+    _myBox.put("TASKLIST", taskList);
     _myBox.put("HABITLIST", habitList);
     _myBox.put("ACTIVITYLIST", activityList);
     _myBox.put("CATEGORYLIST", categoryList);

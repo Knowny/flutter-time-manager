@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 
-class ToDoTile extends StatelessWidget {
+class TaskTile extends StatelessWidget {
   final String taskName;
   final bool taskCompleted;
   final bool taskFavourited;
@@ -12,7 +12,7 @@ class ToDoTile extends StatelessWidget {
   Function(BuildContext)? editFunction;
   Function(BuildContext)? deleteFunction;
 
-  ToDoTile({
+  TaskTile({
     super.key,
     required this.taskName,
     required this.taskCompleted,

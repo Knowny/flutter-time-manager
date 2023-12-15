@@ -7,21 +7,21 @@ import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/habit_dialog_box.dart';
 import 'package:itu_proj/util/habit_tile.dart';
-import 'package:itu_proj/util/todo_dialog_box.dart';
+import 'package:itu_proj/util/task_dialog_box.dart';
 import 'package:itu_proj/util/todo_segmented_button.dart';
-import '../util/todo_tile.dart';
+import '../util/task_tile.dart';
 
-class TaskPage extends StatefulWidget {
-  const TaskPage({super.key});
+class TodoPage extends StatefulWidget {
+  const TodoPage({super.key});
 
   @override
-  State<TaskPage> createState() => _TaskPageState();
+  State<TodoPage> createState() => _TodoPageState();
 }
 
 // * AUTOMATIC KEEP ALIVE
 //https://stackoverflow.com/questions/65657495/flutter-debuglifecyclestate-elementlifecycle-defunct-is-not-true
 
-class _TaskPageState extends State<TaskPage>
+class _TodoPageState extends State<TodoPage>
     with AutomaticKeepAliveClientMixin {
   // select tasks
   Selector selectorView = Selector.Tasks;
@@ -39,7 +39,7 @@ class _TaskPageState extends State<TaskPage>
       }
     });
     // 1st time ever opening app -> create default data
-    if ((_myBox.get("TODOLIST") == null) && (_myBox.get("HABITLIST") == null)) {
+    if ((_myBox.get("TASKLIST") == null) && (_myBox.get("HABITLIST") == null)) {
       db.createInitialData();
     } else {
       // data already exists
@@ -84,8 +84,8 @@ class _TaskPageState extends State<TaskPage>
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  // * TEXT CONTROLLER
-  final _controller = TextEditingController();
+  // * Task name controller
+  final _taskNameController = TextEditingController();
 
   // * Habit name controller
   final _habitNameController = TextEditingController();
@@ -337,7 +337,7 @@ class _TaskPageState extends State<TaskPage>
   // * TAPPED CHECKBOX - TASK
   void checkBoxChanged(bool? value, int index) {
     setState(() {
-      db.toDoList[index][1] = !db.toDoList[index][1];
+      db.taskList[index][1] = !db.taskList[index][1];
     });
     db.updateDataBase();
   }
@@ -345,12 +345,12 @@ class _TaskPageState extends State<TaskPage>
   // * ADD/REMOVE TASK TO/FROM FAVOURITES
   void addTaskToFavourites(int index) {
     setState(() {
-      db.toDoList[index][2] = !db.toDoList[index][2];
+      db.taskList[index][2] = !db.taskList[index][2];
     });
 
     // https://api.flutter.dev/flutter/dart-core/List/sort.html
     // sort the list, so the favourites are before the non-favourites
-    db.toDoList.sort((a, b) {
+    db.taskList.sort((a, b) {
       if (a[2] && !b[2]) {
         return -1; // a = true, b = false -> a should be before b
       } else if (!a[2] && b[2]) {
@@ -367,9 +367,9 @@ class _TaskPageState extends State<TaskPage>
     showDialog(
       context: context,
       builder: (context) {
-        return DialogBox(
+        return TaskDialogBox(
           // text controller
-          controller: _controller,
+          controller: _taskNameController,
           // save button
           onSave: saveNewTask,
           // cancel button
@@ -381,12 +381,12 @@ class _TaskPageState extends State<TaskPage>
 
   // * SAVE NEW TASK
   void saveNewTask() {
-    String newTaskName = _controller.text;
+    String newTaskName = _taskNameController.text;
     if (newTaskName.isNotEmpty) {
       setState(() {
         // taskName, isCompleted, isFavourite
-        db.toDoList.add([_controller.text, false, false]);
-        _controller.clear();
+        db.taskList.add([_taskNameController.text, false, false]);
+        _taskNameController.clear();
       });
       Navigator.of(context).pop();
       db.updateDataBase();
@@ -397,20 +397,20 @@ class _TaskPageState extends State<TaskPage>
 
   // * EDIT TASK
   void editTask(int index) {
-    String currentTaskName = db.toDoList[index][0];
-    _controller.text = currentTaskName;
+    String currentTaskName = db.taskList[index][0];
+    _taskNameController.text = currentTaskName;
 
     showDialog(
       context: context,
       builder: (context) {
-        return DialogBox(
-            controller: _controller,
+        return TaskDialogBox(
+            controller: _taskNameController,
             onSave: () {
-              saveExistingTask(index, _controller.text);
+              saveExistingTask(index, _taskNameController.text);
             },
             onCancel: () {
               Navigator.of(context).pop();
-              _controller.clear();
+              _taskNameController.clear();
             });
       },
     );
@@ -420,8 +420,8 @@ class _TaskPageState extends State<TaskPage>
   void saveExistingTask(int index, String newName) {
     if (newName.isNotEmpty) {
       setState(() {
-        db.toDoList[index][0] = newName;
-        _controller.clear();
+        db.taskList[index][0] = newName;
+        _taskNameController.clear();
       });
       Navigator.of(context).pop();
       db.updateDataBase();
@@ -433,7 +433,7 @@ class _TaskPageState extends State<TaskPage>
   // * DELETE TASK
   void deleteTask(int index) {
     setState(() {
-      db.toDoList.removeAt(index);
+      db.taskList.removeAt(index);
     });
     db.updateDataBase();
   }
@@ -459,20 +459,25 @@ class _TaskPageState extends State<TaskPage>
           ),
           Expanded(
             child: (selectorView == Selector.Tasks)
-
                 // * BUILD LIST - TASKS
                 ? ListView.builder(
-                    itemCount: db.toDoList.length,
+                    itemCount: db.taskList.length,
                     itemBuilder: (context, index) {
-                      return ToDoTile(
-                        taskName: db.toDoList[index][0],
-                        taskCompleted: db.toDoList[index][1],
-                        taskFavourited: db.toDoList[index][2],
-                        onChanged: (value) => checkBoxChanged(value, index),
-                        addToFavouritesFunction: (context) =>
-                            addTaskToFavourites(index),
-                        editFunction: (context) => editTask(index),
-                        deleteFunction: (context) => deleteTask(index),
+                      bool isLastTile = index == db.taskList.length -1;
+
+                      return Padding(
+                        // * ADD A BOTTOM PADDING ONLY TO THE LAST TILE (because of the floating button)
+                        padding: EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
+                        child: TaskTile(
+                          taskName: db.taskList[index][0],
+                          taskCompleted: db.taskList[index][1],
+                          taskFavourited: db.taskList[index][2],
+                          onChanged: (value) => checkBoxChanged(value, index),
+                          addToFavouritesFunction: (context) =>
+                              addTaskToFavourites(index),
+                          editFunction: (context) => editTask(index),
+                          deleteFunction: (context) => deleteTask(index),
+                        ),
                       );
                     },
                   )
@@ -481,20 +486,26 @@ class _TaskPageState extends State<TaskPage>
                 ListView.builder(
                     itemCount: db.habitList.length,
                     itemBuilder: (context, index) {
-                      return HabitTile(
-                        habitName: db.habitList[index][0],
-                        habitCompleted: db.habitList[index][1],
-                        habitActive: db.habitList[index][2],
-                        timeSpent: db.habitList[index][3],
-                        timeDuration: db.habitList[index][4],
-                        habitFavourited: db.habitList[index][5],
-                        onTap: () {
-                          habitTimer(index);
-                        },
-                        addToFavouritesFunction: (context) =>
-                            addHabitToFavourites(index),
-                        editFunction: (context) => editHabit(index),
-                        deleteFunction: (context) => deleteHabit(index),
+                      bool isLastTile = index == db.habitList.length -1;
+
+                      return Padding(
+                        // * ADD A BOTTOM PADDING ONLY TO THE LAST TILE (because of the floating button)
+                        padding: EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
+                        child: HabitTile(
+                          habitName: db.habitList[index][0],
+                          habitCompleted: db.habitList[index][1],
+                          habitActive: db.habitList[index][2],
+                          timeSpent: db.habitList[index][3],
+                          timeDuration: db.habitList[index][4],
+                          habitFavourited: db.habitList[index][5],
+                          onTap: () {
+                            habitTimer(index);
+                          },
+                          addToFavouritesFunction: (context) =>
+                              addHabitToFavourites(index),
+                          editFunction: (context) => editHabit(index),
+                          deleteFunction: (context) => deleteHabit(index),
+                        ),
                       );
                     },
                   ),

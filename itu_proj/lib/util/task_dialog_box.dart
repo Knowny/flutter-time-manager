@@ -2,12 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:itu_proj/util/my_button.dart';
 
-class DialogBox extends StatelessWidget {
+class TaskDialogBox extends StatelessWidget {
   final controller;
   VoidCallback onSave;
   VoidCallback onCancel;
 
-  DialogBox({
+  TaskDialogBox({
     super.key,
     required this.controller,
     required this.onSave,

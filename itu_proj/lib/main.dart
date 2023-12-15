@@ -3,7 +3,7 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:itu_proj/util/todo_segmented_button.dart';
-import 'package:itu_proj/pages/task_page.dart';
+import 'package:itu_proj/pages/todo_page.dart';
 import 'package:itu_proj/pages/timer_page.dart';
 import 'package:itu_proj/pages/stats_page.dart';
 import 'package:itu_proj/pages/calendar_page.dart';
@@ -74,7 +74,7 @@ class MyApp extends StatelessWidget {
           ),
           body: const TabBarView(
             children: [
-              TaskPage(),
+              TodoPage(),
               TimerPage(),
               StatsPage(),
               CalendarPage(),
