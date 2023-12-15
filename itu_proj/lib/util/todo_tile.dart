@@ -28,22 +28,18 @@ class ToDoTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: Slidable(
-        startActionPane: ActionPane(
-          motion: StretchMotion(),
-          extentRatio: 0.25,
+        endActionPane: ActionPane(
+          motion: const StretchMotion(),
+          extentRatio: 0.66,
           children: [
-            // * ADD TO FAVOURITES OPTION
+            // *FAVOURITES OPTION
             SlidableAction(
               onPressed: addToFavouritesFunction,
               icon: taskFavourited ? Icons.star : Icons.star_border,
-              backgroundColor: Colors.lightGreen,
+              backgroundColor: Colors.grey.shade400,
               borderRadius: BorderRadius.circular(12),
             ),
-          ],
-        ),
-        endActionPane: ActionPane(
-          motion: const StretchMotion(),
-          children: [
+
             // * EDIT OPTION
             SlidableAction(
               onPressed: editFunction,

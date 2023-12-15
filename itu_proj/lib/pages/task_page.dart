@@ -92,8 +92,6 @@ class _TaskPageState extends State<TaskPage>
   // * Habit duration controller
   final _habitDurationController = TextEditingController();
 
-  // todo format the time accordingly
-
   // * ADD/REMOVE HABIT TO/FROM FAVOURITES
   void addHabitToFavourites(int index) {
     setState(() {

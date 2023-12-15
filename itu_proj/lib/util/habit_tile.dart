@@ -40,14 +40,14 @@ class HabitTile extends StatelessWidget {
     int seconds = (timeSeconds % 3600) % 60;
 
     // HH:mm:ss format
-    String hhmmssTime = '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    String hhmmssTime =
+        '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
     // variable for the formated time
     String formattedTime;
 
     if (hhmmssTime.startsWith('00:')) {
       formattedTime = hhmmssTime.substring(3);
-    }
-    else if (hhmmssTime.startsWith('0')) {
+    } else if (hhmmssTime.startsWith('0')) {
       formattedTime = hhmmssTime.substring(1);
     } else {
       formattedTime = hhmmssTime;
@@ -66,22 +66,17 @@ class HabitTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: Slidable(
-        startActionPane: ActionPane(
-          motion: StretchMotion(),
-          extentRatio: 0.25,
+        endActionPane: ActionPane(
+          motion: const StretchMotion(),
+          extentRatio: 0.66,
           children: [
             // * ADD TO FAVOURITES OPTION
             SlidableAction(
               onPressed: addToFavouritesFunction,
               icon: habitFavourited ? Icons.star : Icons.star_border,
-              backgroundColor: Colors.lightGreen,
+              backgroundColor: Colors.grey.shade400,
               borderRadius: BorderRadius.circular(12),
             ),
-          ],
-        ),
-        endActionPane: ActionPane(
-          motion: const StretchMotion(),
-          children: [
             // * EDIT OPTION
             SlidableAction(
               onPressed: editFunction,
@@ -99,7 +94,7 @@ class HabitTile extends StatelessWidget {
           ],
         ),
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             border: habitFavourited
                 ? Border.all(width: 2, color: Colors.orange)
@@ -162,7 +157,6 @@ class HabitTile extends StatelessWidget {
                   const SizedBox(height: 8.0),
                   // * PROGRESS TEXT
                   Text(
-                    // TODO
                     seconds2hhmmssFormated(timeSpent) +
                         ' / ' +
                         seconds2hhmmssFormated(timeDuration) +
