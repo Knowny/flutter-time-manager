@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:itu_proj/util/my_button.dart';
 
 class TaskDialogBox extends StatelessWidget {
-  final controller;
+  final taskNameController;
   VoidCallback onSave;
   VoidCallback onCancel;
 
   TaskDialogBox({
     super.key,
-    required this.controller,
+    required this.taskNameController,
     required this.onSave,
     required this.onCancel,
   });
@@ -27,7 +27,7 @@ class TaskDialogBox extends StatelessWidget {
           const Text('Task name:'),
           // * USER INPUT - TASK NAME
           TextField(
-            controller: controller,
+            controller: taskNameController,
             decoration: const InputDecoration(
               enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey)),

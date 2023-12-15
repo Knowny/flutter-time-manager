@@ -369,7 +369,7 @@ class _TodoPageState extends State<TodoPage>
       builder: (context) {
         return TaskDialogBox(
           // text controller
-          controller: _taskNameController,
+          taskNameController: _taskNameController,
           // save button
           onSave: saveNewTask,
           // cancel button
@@ -404,7 +404,7 @@ class _TodoPageState extends State<TodoPage>
       context: context,
       builder: (context) {
         return TaskDialogBox(
-            controller: _taskNameController,
+            taskNameController: _taskNameController,
             onSave: () {
               saveExistingTask(index, _taskNameController.text);
             },
