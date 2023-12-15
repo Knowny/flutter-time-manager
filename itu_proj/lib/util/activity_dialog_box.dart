@@ -228,6 +228,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     DateTime newStart = durationToDateTime(startTime, widget.selectedDay);
     DateTime newEnd = durationToDateTime(endTime, widget.selectedDay);
 
+    // TODO add checks only if activity does not exists??
     if (!checkStartEnd(newStart, newEnd)) {
       _showErrorInvalidTimes(context);
     } else if (!checkFutureTest(newStart, newEnd)) {
