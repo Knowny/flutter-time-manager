@@ -41,6 +41,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
   String categoryPickedName = "";
 
   bool isRunning = false;
+  bool isPaused = false;
   bool isIncremental = false;
   bool categoryPicked = false;
   bool activitySaved = false;
@@ -154,26 +155,71 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
                 //--------------------------------------------------------------
                 //                  TIMER MODE PICKER
                 //--------------------------------------------------------------
-                 Padding(
-                  padding: const EdgeInsets.all(40),
-                  child: GestureDetector(
-                    onTap: () {
-                      if(isIncremental){
-                        setState(() {
-                          isIncremental = false;
-                          minutes = 0;
-                        });
-                        
-                      }else{
-                      setState(() {
-                          isIncremental = true;
-                        });
-                      }
-                    },
-                    child: RoundButton(icon: isIncremental ? Icons.timer : Icons.timelapse),
-                  )
+                 Row(
+                  children: [
+                    GestureDetector(
+                      onTap: () {
+                        if(controller.isAnimating || isPaused){
+                          final snackBar = SnackBar(
+                            content: Text('Timer mode cannot be changed while activity is in progress', 
+                              style: TextStyle(color: Colors.grey.shade900.withOpacity(1.0)),
+                            ),
+                            backgroundColor: Colors.grey.withOpacity(0.8),
+                          );
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            snackBar
+                          );
+                        }
+                        else if(!isIncremental){
+                          setState(() {
+                            isIncremental = true;
+                            minutes = 0;
+                          });
+                        }
+                      },
+                      child: RoundButtonLeft(
+                        size: 40,
+                        clicked: isIncremental,
+                        icon: Icons.timer),
+                    ),
+                    GestureDetector(
+                      
+                      onTap: () {
+                        if(controller.isAnimating || isPaused){
+                           final snackBar = SnackBar(
+                            content: Text('Timer mode cannot be changed while activity is in progress', 
+                              style: TextStyle(color: Colors.grey.shade900.withOpacity(1.0)),
+                            ),
+                            backgroundColor: Colors.grey.withOpacity(0.8),
+                          );
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            snackBar
+                          );
+                        }
+                        else if(isIncremental){
+                          setState(() {
+                            isIncremental = false;
+                          });
+                        }
+                      },
+                      child: RoundButtonRight(
+                        size: 40,
+                        clicked: !isIncremental,
+                        icon: Icons.timelapse
+                      ),
+                    ),
+                  ],
+                  
                 ),
-    
+                const Text(
+                  'Last activity'
+                ),
+                Text(
+                  //isIncremental || lastTimer == Duration.zero ? categoryPickedName : '$categoryPickedName for ${(lastTimer.inSeconds).toString()} seconds'
+                  '$isIncremental'
+                ),
               //--------------------------------------------------------------
               //                     TIMER CIRCLE
               //--------------------------------------------------------------
@@ -229,9 +275,9 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
           //--------------------------------------------------------------
           //                     BUTTONS
           //--------------------------------------------------------------
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 40),
-            child: Row(
+          Column(
+            children: [
+              Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 //--------------------------------------------------------------
@@ -291,6 +337,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
                       controller.stop();
                       setState(() {
                         isRunning = false;
+                        isPaused = true;
                       });
                     }else{
                       if (categoryPicked && !isIncremental){ //resume decrement
@@ -300,13 +347,16 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
                       }
                       setState(() {
                         isRunning = true;
+                        isPaused = false;
                       });
                     } //if-else 
                   
                     }//if
                   }, //onTap
                   
-                  child: RoundButton(
+                  child: RoundButtonLeft(
+                    size: 50,
+                    clicked: (isPaused || controller.isDismissed || controller.isAnimating),
                     icon: isRunning ? Icons.pause : Icons.play_arrow,
                     )
                 ),
@@ -318,46 +368,53 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
                     controller.reset();
                     setState(() {
                       isRunning = false;
+                      isPaused = false;
                       categoryPicked = false;
                       activityCreate();
                     });
                   },
-                  child: const RoundButton(
+                  child: RoundButtonRight(
+                    size: 50,
+                    clicked: (controller.isAnimating || isPaused),
                     icon: Icons.stop
                   ),
                 ),
-                //--------------------------------------------------------------
-                //                     RESET
-                //--------------------------------------------------------------
-                GestureDetector(
-                  onTap: () {
-                    if(categoryPickedName != "" && lastTimer != Duration.zero){
-                        if (controller.isDismissed && !isIncremental){
-                        controller.duration = lastTimer;
-                        controller.reverse(
-                          from: 1.0
-                        );
-                        setState(() {
-                          categoryPicked = true;
-                          isRunning = true;
-                        });
-                      }else if (controller.isDismissed && isIncremental){
-                        controller.duration = const Duration(seconds: 60);
-                        controller.forward();
-                        setState(() {
-                          categoryPicked = true;
-                          isRunning = true;
-                        });
-                      }
-                    }
-                    
-                  },
-                  child: const RoundButton(icon: Icons.restart_alt_rounded),
-                )
-                
-                
-              ],
+              ]  
+              
             ),
+            //--------------------------------------------------------------
+            //                     RESET
+            //--------------------------------------------------------------
+            Visibility(
+              visible: (controller.isDismissed && !isPaused),
+              child:GestureDetector(
+                onTap: () {
+                  if(categoryPickedName != "" && lastTimer != Duration.zero){
+                      if (controller.isDismissed && !isIncremental){
+                      controller.duration = lastTimer;
+                      controller.reverse(
+                        from: 1.0
+                      );
+                      setState(() {
+                        categoryPicked = true;
+                        isRunning = true;
+                      });
+                    }else if (controller.isDismissed && isIncremental){
+                      controller.duration = const Duration(seconds: 60);
+                      controller.forward();
+                      setState(() {
+                        categoryPicked = true;
+                        isRunning = true;
+                      });
+                    }
+                  }
+                  
+                },
+                child: const RestartButton(text: "Restart last activity"),
+              ) 
+            )
+            
+            ]
           )
         ],
       )
