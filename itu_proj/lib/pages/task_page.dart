@@ -1,6 +1,7 @@
 /// author(s): xhusar11
 import 'dart:async';
 
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
@@ -30,6 +31,12 @@ class _TaskPageState extends State<TaskPage> with AutomaticKeepAliveClientMixin 
 
   @override
   void initState() {
+    // notifications
+    AwesomeNotifications().isNotificationAllowed().then((isAllowed) {
+      if (!isAllowed) {
+        AwesomeNotifications().requestPermissionToSendNotifications();
+      }
+    });
     // 1st time ever opening app -> create default data
     if ((_myBox.get("TODOLIST") == null) && (_myBox.get("HABITLIST") == null)) {
       db.createInitialData();
@@ -42,6 +49,18 @@ class _TaskPageState extends State<TaskPage> with AutomaticKeepAliveClientMixin 
 
   @override
   bool get wantKeepAlive => true;
+
+  triggerNotification(String habitName) {
+    AwesomeNotifications().createNotification(
+      content: NotificationContent(
+        id: 10, 
+        channelKey: 'basic_channel',
+        title: 'Habit Completed',
+        body: '${habitName} is Completed!',
+      ),
+    );
+
+  }
 
   // convert HH:mm:ss(string) to seconds(int)
   int hhmmss2Seconds(String timeString) {
@@ -147,6 +166,10 @@ class _TaskPageState extends State<TaskPage> with AutomaticKeepAliveClientMixin 
             if (db.habitList[index][1] == false) {
               // check if the spentTime(sec) is bigger thank the durationTime(sec)
               if ((db.habitList[index][3] >= (db.habitList[index][4]))) {
+                // send notification
+                triggerNotification(db.habitList[index][0]);
+
+
                 // set the habit state to completed
                 db.habitList[index][1] = true;
               }

@@ -1,4 +1,5 @@
 /// author(s): xhusar11
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 // import 'package:itu_proj/util/todo_segmented_button.dart';
@@ -12,6 +13,19 @@ import 'package:itu_proj/util/adapters.dart';
 // import 'package:google_fonts/google_fonts.dart'; // for google fonts
 
 void main() async {
+  AwesomeNotifications().initialize(
+    // default icon
+    null,
+    [
+      NotificationChannel(
+          channelKey: 'basic_channel',
+          channelName: 'Basic notifications',
+          channelDescription: 'Notification channel for basic tests'
+      ),
+    ],
+    debug: true,
+  );
+
   //init the hive db
   Hive.registerAdapter(MaterialColorAdapter());
   Hive.registerAdapter(DurationAdapter());
@@ -37,7 +51,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
         ),
         // textTheme: TextTheme(
-          // //google fonts applicable
+        // //google fonts applicable
         // ),
       ),
       debugShowCheckedModeBanner: false,
@@ -55,7 +69,8 @@ class MyApp extends StatelessWidget {
               ],
             ),
             // title: const Text('Tabs Demo'),  // no title
-            toolbarHeight: 0, // not text -> as much space for application as possible
+            toolbarHeight:
+                0, // not text -> as much space for application as possible
           ),
           body: const TabBarView(
             children: [
@@ -66,7 +81,7 @@ class MyApp extends StatelessWidget {
               SettingsPage(),
             ],
           ),
-        ), 
+        ),
       ),
     );
   }
