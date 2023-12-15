@@ -58,7 +58,7 @@ class _TodoPageState extends State<TodoPage>
         id: 10,
         channelKey: 'basic_channel',
         title: 'Habit Completed',
-        body: '${habitName} is Completed!',
+        body: '$habitName is Completed!',
       ),
     );
   }
@@ -100,7 +100,7 @@ class _TodoPageState extends State<TodoPage>
     // any timer is running -> habitTimerActive = true
     for (var i = 0; i < db.habitList.length; i++) {
       if (db.habitList[i][2] == true) {
-        habitTimerActive = true;  
+        habitTimerActive = true;
       }
     }
 
@@ -157,7 +157,7 @@ class _TodoPageState extends State<TodoPage>
       var iterator = 0;
       // check if habit is active
       if (db.habitList[index][2]) {
-        Timer.periodic(Duration(milliseconds: 100), (timer) {
+        Timer.periodic(const Duration(milliseconds: 100), (timer) {
           setState(() {
             // check if the user stopped the timer
             if (!db.habitList[index][2]) {
@@ -228,6 +228,7 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+      _habitAddedSnackBar(context);
     } else if ((newHabitName.isNotEmpty) && (habitDuration <= 0)) {
       _showEmptyHabitDurationDialog(context);
     } else {
@@ -272,6 +273,7 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+      _habitEditedSnackBar(context);
     } else if ((newName.isNotEmpty) && (hhmmss2Seconds(newDuration) <= 0)) {
       _showEmptyHabitDurationDialog(context);
     } else {
@@ -285,6 +287,104 @@ class _TodoPageState extends State<TodoPage>
       db.habitList.removeAt(index);
     });
     db.updateDataBase();
+    _habitDeletedSnackBar(context);
+  }
+
+  // https://api.flutter.dev/flutter/material/SnackBar-class.html
+  // * SNACKBAR - TASK ADDED
+  void _taskAddedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Task added successfully',
+          style: TextStyle(color: Colors.grey.shade900),
+        ),
+        backgroundColor: Colors.lightGreen.withOpacity(0.8),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        width: 220.0,
+      ),
+    );
+  }
+
+  // * SNACKBAR - TASK EDITED
+  void _taskEditedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Task edited successfully',
+          style: TextStyle(color: Colors.grey.shade900),
+        ),
+        backgroundColor: Colors.grey.shade300.withOpacity(0.8),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        width: 220.0,
+      ),
+    );
+  }
+
+  // * SNACKBAR - TASK DELETED
+  void _taskDeletedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Task deleted successfully',
+          style: TextStyle(color: Colors.grey.shade200),
+        ),
+        backgroundColor: Colors.red.withOpacity(0.8),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        width: 220.0,
+      ),
+    );
+  }
+
+  // * SNACKBAR - HABIT ADDED
+  void _habitAddedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Habit added successfully',
+          style: TextStyle(color: Colors.grey.shade900),
+        ),
+        backgroundColor: Colors.lightGreen.withOpacity(0.8),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        width: 220.0,
+      ),
+    );
+  }
+
+  // * SNACKBAR - HABIT EDITED
+  void _habitEditedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Habit edited successfully',
+          style: TextStyle(color: Colors.grey.shade900),
+        ),
+        backgroundColor: Colors.grey.shade300.withOpacity(0.8),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        width: 220.0,
+      ),
+    );
+  }
+
+  // * SNACKBAR - HABIT DELETED
+  void _habitDeletedSnackBar(BuildContext context) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          'Habit deleted successfully',
+          style: TextStyle(color: Colors.grey.shade200),
+        ),
+        backgroundColor: Colors.red.withOpacity(0.8),
+        duration: const Duration(seconds: 2),
+        behavior: SnackBarBehavior.floating,
+        width: 220.0,
+      ),
+    );
   }
 
   // * EMPTY NAME ALERT - TASK
@@ -293,14 +393,14 @@ class _TodoPageState extends State<TodoPage>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Invalid task name.'),
-          content: Text('Task name can not be empty.'),
+          title: const Text('Invalid Task name.'),
+          content: const Text('Task name can not be empty.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -314,14 +414,14 @@ class _TodoPageState extends State<TodoPage>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Invalid habit name.'),
-          content: Text('Habit name can not be empty.'),
+          title: const Text('Invalid Habit name.'),
+          content: const Text('Habit name can not be empty.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -335,14 +435,14 @@ class _TodoPageState extends State<TodoPage>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Set the habit duration.'),
-          content: Text('Habit duration can not be 00:00:00.'),
+          title: const Text('Set the habit duration.'),
+          content: const Text('Habit duration can not be 00:00:00.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -356,15 +456,15 @@ class _TodoPageState extends State<TodoPage>
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text('Turn of the Habit timers.'),
-          content: Text(
+          title: const Text('Turn of the Habit timers.'),
+          content: const Text(
               'In order to set Habit as favourite, turn of all Habit timers.'),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('OK'),
+              child: const Text('OK'),
             ),
           ],
         );
@@ -428,6 +528,7 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+      _taskAddedSnackBar(context);
     } else {
       _showEmptyNameDialog(context);
     }
@@ -463,6 +564,7 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+      _taskEditedSnackBar(context);
     } else {
       _showEmptyNameDialog(context);
     }
@@ -474,6 +576,7 @@ class _TodoPageState extends State<TodoPage>
       db.taskList.removeAt(index);
     });
     db.updateDataBase();
+    _taskDeletedSnackBar(context);
   }
 
   // * BUILD PAGE
