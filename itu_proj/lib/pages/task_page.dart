@@ -21,7 +21,8 @@ class TaskPage extends StatefulWidget {
 // * AUTOMATIC KEEP ALIVE
 //https://stackoverflow.com/questions/65657495/flutter-debuglifecyclestate-elementlifecycle-defunct-is-not-true
 
-class _TaskPageState extends State<TaskPage> with AutomaticKeepAliveClientMixin {
+class _TaskPageState extends State<TaskPage>
+    with AutomaticKeepAliveClientMixin {
   // select tasks
   Selector selectorView = Selector.Tasks;
 
@@ -50,16 +51,16 @@ class _TaskPageState extends State<TaskPage> with AutomaticKeepAliveClientMixin 
   @override
   bool get wantKeepAlive => true;
 
+  // send notification (android only)
   triggerNotification(String habitName) {
     AwesomeNotifications().createNotification(
       content: NotificationContent(
-        id: 10, 
+        id: 10,
         channelKey: 'basic_channel',
         title: 'Habit Completed',
         body: '${habitName} is Completed!',
       ),
     );
-
   }
 
   // convert HH:mm:ss(string) to seconds(int)
@@ -168,7 +169,6 @@ class _TaskPageState extends State<TaskPage> with AutomaticKeepAliveClientMixin 
               if ((db.habitList[index][3] >= (db.habitList[index][4]))) {
                 // send notification
                 triggerNotification(db.habitList[index][0]);
-
 
                 // set the habit state to completed
                 db.habitList[index][1] = true;
