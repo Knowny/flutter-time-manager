@@ -94,22 +94,38 @@ class _TodoPageState extends State<TodoPage>
 
   // * ADD/REMOVE HABIT TO/FROM FAVOURITES
   void addHabitToFavourites(int index) {
-    setState(() {
-      db.habitList[index][5] = !db.habitList[index][5];
-    });
+    // variable for running timer check
+    bool habitTimerActive = false;
 
-    // https://api.flutter.dev/flutter/dart-core/List/sort.html
-    // sort the list, so the favourites are before the non-favourites
-    db.habitList.sort((a, b) {
-      if (a[5] && !b[5]) {
-        return -1; // a = true, b = false -> a should be before b
-      } else if (!a[5] && b[5]) {
-        return 1; // a = false, b = true -> b should be before a
-      } else {
-        return 0; // a = b -> dont change the order
+    // any timer is running -> habitTimerActive = true
+    for (var i = 0; i < db.habitList.length; i++) {
+      if (db.habitList[i][2] == true) {
+        habitTimerActive = true;  
       }
-    });
-    db.updateDataBase();
+    }
+
+    // if no timer is running
+    if (!habitTimerActive) {
+      setState(() {
+        db.habitList[index][5] = !db.habitList[index][5];
+      });
+
+      // https://api.flutter.dev/flutter/dart-core/List/sort.html
+      // sort the list, so the favourites are before the non-favourites
+      db.habitList.sort((a, b) {
+        if (a[5] && !b[5]) {
+          return -1; // a = true, b = false -> a should be before b
+        } else if (!a[5] && b[5]) {
+          return 1; // a = false, b = true -> b should be before a
+        } else {
+          return 0; // a = b -> dont change the order
+        }
+      });
+      db.updateDataBase();
+    } else {
+      // alert the user to turn off the timer(s)
+      _addHabitToFavouritesWhileActiveDialog(context);
+    }
   }
 
   // * START/STOP HABIT TIMER
@@ -334,6 +350,28 @@ class _TodoPageState extends State<TodoPage>
     );
   }
 
+  // * ADD HABIT TO FAVOURITES (timer still running) DIALOG
+  void _addHabitToFavouritesWhileActiveDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Turn of the Habit timers.'),
+          content: Text(
+              'In order to set Habit as favourite, turn of all Habit timers.'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // * TAPPED CHECKBOX - TASK
   void checkBoxChanged(bool? value, int index) {
     setState(() {
@@ -463,11 +501,12 @@ class _TodoPageState extends State<TodoPage>
                 ? ListView.builder(
                     itemCount: db.taskList.length,
                     itemBuilder: (context, index) {
-                      bool isLastTile = index == db.taskList.length -1;
+                      bool isLastTile = index == db.taskList.length - 1;
 
                       return Padding(
                         // * ADD A BOTTOM PADDING ONLY TO THE LAST TILE (because of the floating button)
-                        padding: EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
+                        padding:
+                            EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
                         child: TaskTile(
                           taskName: db.taskList[index][0],
                           taskCompleted: db.taskList[index][1],
@@ -486,11 +525,12 @@ class _TodoPageState extends State<TodoPage>
                 ListView.builder(
                     itemCount: db.habitList.length,
                     itemBuilder: (context, index) {
-                      bool isLastTile = index == db.habitList.length -1;
+                      bool isLastTile = index == db.habitList.length - 1;
 
                       return Padding(
                         // * ADD A BOTTOM PADDING ONLY TO THE LAST TILE (because of the floating button)
-                        padding: EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
+                        padding:
+                            EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
                         child: HabitTile(
                           habitName: db.habitList[index][0],
                           habitCompleted: db.habitList[index][1],
