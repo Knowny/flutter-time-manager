@@ -243,7 +243,12 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     }else {
       List<dynamic> newActivity = [widget.controller.text, categoryPickedName, newEnd, calculateDuration(startTime, endTime)];
       setState(() {
-        db.activityList.add(newActivity);
+        if (widget.activity.isEmpty){
+          db.activityList.add(newActivity);
+        } else {
+          int index = db.activityList.indexOf(widget.activity);
+          db.activityList[index] = newActivity;
+        }
       });
       widget.controller.clear();
       db.updateDataBase();
