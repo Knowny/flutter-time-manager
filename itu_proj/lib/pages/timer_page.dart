@@ -12,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/category_pick.dart';
-import 'package:itu_proj/util/category_pick.dart';
 import 'package:itu_proj/util/timer_buttons.dart';
 //import 'dart:async';
 ///--------------------------------------------------------------
@@ -30,11 +29,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
   ///                          db
   ///--------------------------------------------------------------
   // refference the hive box
-/// TickerProviderStateMixin for Animation controller vsync
-class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
-// refference the hive box
   final _myBox = Hive.box('mybox');
-  //database stufferino
   ToDoDatabase db = ToDoDatabase();
 
   ///--------------------------------------------------------------
@@ -59,11 +54,6 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
   ///--------------------------------------------------------------
   ///                     TIMER TEXT
   ///--------------------------------------------------------------
-  bool saveActivity = false;
-  bool categoryPicked = false;
-
-
-  //changes time text
   String get countText {
     Duration count = controller.duration! * controller.value + Duration(minutes: minutes);
     //return formatted text in tertiary operator
@@ -78,7 +68,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
   @override
   void initState() {
     // 1st time ever opening app -> create default data
-    if (_myBox.get("ACTIVITYLIST") == null) {
+    if (_myBox.get("TODOLIST") == null) {
       db.createInitialData();
     } else {
       // data already exists
@@ -104,7 +94,6 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
             //zero out duration
             controller.duration = Duration.zero;
             categoryPicked = false;
-            categoryPicked = false;
             isRunning = false;
             activityCreate();
           }
@@ -119,8 +108,6 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
             lastTimer = controller.duration! * progress + Duration(minutes: minutes);
             controller.duration = Duration.zero;
             isRunning = false;
-            saveActivity = true;
-
 
           }
           //display full circle
@@ -155,8 +142,6 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
   ///--------------------------------------------------------------
   ///                     BUILD
   ///--------------------------------------------------------------
-  
-
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -170,71 +155,84 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                 //--------------------------------------------------------------
                 //                  TIMER MODE PICKER
                 //--------------------------------------------------------------
-                 Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if(controller.isAnimating || isPaused){
-                          final snackBar = SnackBar(
-                            content: Text('Timer mode cannot be changed while activity is in progress', 
-                              style: TextStyle(color: Colors.grey.shade900.withOpacity(1.0)),
-                            ),
-                            backgroundColor: Colors.grey.withOpacity(0.8),
-                          );
+                Padding(
+                  padding: EdgeInsets.only(top: 25),
+                  child:
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      GestureDetector(
+                        onTap: () {
+                          if(controller.isAnimating || isPaused){
+                            final snackBar = SnackBar(
+                              content: Text('Timer mode cannot be changed while activity is in progress', 
+                                style: TextStyle(color: Colors.grey.shade900.withOpacity(1.0)),
+                              ),
+                              backgroundColor: Colors.grey.withOpacity(0.8),
+                            );
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            snackBar
-                          );
-                        }
-                        else if(!isIncremental){
-                          setState(() {
-                            isIncremental = true;
-                            minutes = 0;
-                          });
-                        }
-                      },
-                      child: RoundButtonLeft(
-                        size: 40,
-                        clicked: isIncremental,
-                        icon: Icons.timer),
-                    ),
-                    GestureDetector(
-                      
-                      onTap: () {
-                        if(controller.isAnimating || isPaused){
-                           final snackBar = SnackBar(
-                            content: Text('Timer mode cannot be changed while activity is in progress', 
-                              style: TextStyle(color: Colors.grey.shade900.withOpacity(1.0)),
-                            ),
-                            backgroundColor: Colors.grey.withOpacity(0.8),
-                          );
-
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            snackBar
-                          );
-                        }
-                        else if(isIncremental){
-                          setState(() {
-                            isIncremental = false;
-                          });
-                        }
-                      },
-                      child: RoundButtonRight(
-                        size: 40,
-                        clicked: !isIncremental,
-                        icon: Icons.timelapse
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              snackBar
+                            );
+                          }
+                          else if(!isIncremental){
+                            setState(() {
+                              isIncremental = true;
+                              minutes = 0;
+                            });
+                          }
+                        },
+                        child: RoundButtonLeft(
+                          size: 40,
+                          clicked: isIncremental,
+                          icon: Icons.timer),
                       ),
-                    ),
-                  ],
+                      GestureDetector(
+                        
+                        onTap: () {
+                          if(controller.isAnimating || isPaused){
+                            final snackBar = SnackBar(
+                              content: Text('Timer mode cannot be changed while activity is in progress', 
+                                style: TextStyle(color: Colors.grey.shade900.withOpacity(1.0)),
+                              ),
+                              backgroundColor: Colors.grey.withOpacity(0.8),
+                            );
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              snackBar
+                            );
+                          }
+                          else if(isIncremental){
+                            setState(() {
+                              isIncremental = false;
+                            });
+                          }
+                        },
+                        child: RoundButtonRight(
+                          size: 40,
+                          clicked: !isIncremental,
+                          icon: Icons.timelapse
+                        ),
+                      ),
+                    ],
+                    
+                  ),
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                  child: Row(
+                    children: [
                   
+                    Text(
+                      textAlign: TextAlign.left,
+                      'Last activity',
+                      style: TextStyle(
+                        color: Colors.grey,
+                      )
+                    ),
+                  ],)
                 ),
-                const Text(
-                  'Last activity'
-                ),
-                Text(
-                  //isIncremental || lastTimer == Duration.zero ? categoryPickedName : '$categoryPickedName for ${(lastTimer.inSeconds).toString()} seconds'
-                  '$isIncremental'
-                ),
+                
               //--------------------------------------------------------------
               //                     TIMER CIRCLE
               //--------------------------------------------------------------
@@ -402,7 +400,11 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
             //--------------------------------------------------------------
             Visibility(
               visible: (controller.isDismissed && !isPaused),
-              child:GestureDetector(
+              child:
+              
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 30),
+                  child:  GestureDetector(
                 onTap: () {
                   setState(() {
                     minutes = 0;
@@ -420,20 +422,6 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                     }else if (controller.isDismissed && isIncremental){
                       controller.duration = const Duration(seconds: 60);
                       controller.forward();
-                    }else if (controller.isDismissed && isIncremental){
-                      controller.duration = lastTimer;
-                      controller.forward();
-                      setState(() {
-                        categoryPicked = true;
-                        isRunning = true;
-                      });
-                    }
-                  },
-                  child: const RoundButton(icon: Icons.restart_alt_rounded),
-                ),
-                GestureDetector(
-                  onTap: () {
-                    if(isIncremental){
                       setState(() {
                         categoryPicked = true;
                         isRunning = true;
@@ -443,7 +431,10 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin {
                   
                 },
                 child: const RestartButton(text: "Restart last activity"),
-              ) 
+              ) ,
+                )
+              
+            
             )
             
             ]
