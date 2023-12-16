@@ -142,6 +142,7 @@ class _CalendarPageState extends State<CalendarPage> {
                     ? ActivitiesList(
                         activities: db.getActivitiesByDay(selectedDay),
                         editActivity: editActivity,
+                        db: db,
                       )
                     : const Text("No activities for the selected day."),
               ),

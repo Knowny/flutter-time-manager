@@ -269,7 +269,11 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     DateTime newStart = durationToDateTime(startTime, widget.selectedDay);
     DateTime newEnd = durationToDateTime(endTime, widget.selectedDay);
 
-    // TODO add checks only if activity does not exists??
+    if (widget.activity.isNotEmpty && !categoryPicked){
+        categoryPickedName = widget.activity[1];
+        categoryPicked = true;
+    }
+
     if (!checkStartEnd(newStart, newEnd)) {
       _showErrorInvalidTimes(context);
     } else if (!checkFutureTest(newStart, newEnd)) {
@@ -319,7 +323,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   bool checkCategory() {
-    if (categoryPickedName == ""){
+    if (!categoryPicked){
       return false;
     }
     return true;

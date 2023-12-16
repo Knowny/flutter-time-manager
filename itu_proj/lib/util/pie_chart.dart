@@ -2,15 +2,19 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:itu_proj/data/database.dart';
+import 'package:itu_proj/util/pie_chart_details.dart';
 import 'package:itu_proj/util/stats_segmented_button.dart';
 
 class MyPieChart extends StatefulWidget {
   final ToDoDatabase db;
   final Selector selectorView;
+  final void Function(int) onTouchedIndexChanged;
   
   MyPieChart({
     required this.db,
-    required this.selectorView});
+    required this.selectorView,
+    required this.onTouchedIndexChanged,
+    });
 
   @override
   _MyPieChartState createState() => _MyPieChartState();
@@ -90,6 +94,7 @@ class _MyPieChartState extends State<MyPieChart> {
                   } else {
                     touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
                   }
+                  widget.onTouchedIndexChanged(touchedIndex);
                 });
               },
             ),
@@ -106,13 +111,12 @@ class _MyPieChartState extends State<MyPieChart> {
           style: const TextStyle(fontSize: 20),
 
         ),
-        //TODO add after clicked section specific activities and times
       ],
     );
   }
 
   List<PieChartSectionData> showingSections(List<FlSpot> spots, List<Color> colors) {
-    if (spots.isEmpty && colors.isEmpty) {
+    if (spots.every((spot) => spot.y == 0)) {
       return [
         PieChartSectionData(
           color: Colors.grey,
@@ -156,5 +160,4 @@ class _MyPieChartState extends State<MyPieChart> {
     }
     return totalTime;
   }
-
 }

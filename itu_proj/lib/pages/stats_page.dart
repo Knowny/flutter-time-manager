@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/pie_chart.dart';
+import 'package:itu_proj/util/pie_chart_details.dart';
 import 'package:itu_proj/util/stats_segmented_button.dart';
 
 class StatsPage extends StatefulWidget {
@@ -16,7 +17,7 @@ class _StatsPageState extends State<StatsPage> {
   Selector selectorView = Selector.Today;
   final _myBox = Hive.box('mybox');
   ToDoDatabase db = ToDoDatabase();
-
+  int touchedIndex = 0;
   @override
   void initState() {
     if (_myBox.get("CATEGORYLIST") == null) {
@@ -45,9 +46,24 @@ class _StatsPageState extends State<StatsPage> {
           ),
         Expanded(
           child: 
-            MyPieChart(db: db, selectorView: selectorView)
+            MyPieChart(
+              db: db, 
+              selectorView: selectorView,
+              onTouchedIndexChanged: (index) {
+                touchedIndex = index;
+              },)
+          ),
+        SizedBox(
+          height: 200,
+          child: PieChartDetails(
+            key: ValueKey<int>(touchedIndex),
+            filter: selectorView,
+            db: db,
+            categoryName: (touchedIndex == -1 ? "" : db.categoryList[touchedIndex][0]),
+          ),
           )
-      ]),
+        ]
+      ),
     ); 
   }
 

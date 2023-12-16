@@ -120,6 +120,16 @@ class ToDoDatabase {
     return totalTime;
   }
 
+  Duration getCategoryDuration(String name){
+    Duration totalTime = const Duration(minutes: 0);
+    for (var index = 0; index < activityList.length; index++) {
+      if (activityList[index][1] == name ){
+        totalTime += activityList[index][3];
+      }
+    }
+    return totalTime;
+  }
+
   List<dynamic> getActivitiesByDay(DateTime when) {
     return activityList.where((activity) {
       DateTime activityDate = activity[2]; // Assuming the date is stored at index 2
@@ -163,12 +173,65 @@ class ToDoDatabase {
     return totalTime;
   }
 
+  List<dynamic> getThisMonthActivities(String name){
+    List<dynamic> activities = [];
+    for (var index = 0; index < activityList.length; index++) {
+      if (activityList[index][1] == name && isSameMonth(activityList[index][2], DateTime.now())){
+        activities.add(activityList[index]);
+      }
+    }
+    return activities;
+  }
+
+  List<dynamic> getThisWeekActivities(String name){
+    List<dynamic> activities = [];
+    for (var index = 0; index < activityList.length; index++) {
+      if (activityList[index][1] == name && isSameWeek(activityList[index][2], DateTime.now())){
+        activities.add(activityList[index]);
+      }
+    }
+    return activities;
+  }
+
+  List<dynamic> getTodayActivities(String name){
+    List<dynamic> activities = [];
+    for (var index = 0; index < activityList.length; index++) {
+      if (activityList[index][1] == name && isSameDay(activityList[index][2], DateTime.now())){
+        activities.add(activityList[index]);
+      }
+    }
+    return activities;
+  }
+
+  List<dynamic> getAllCategoryActivities(String name){
+    List<dynamic> activities = [];
+    for (var index = 0; index < activityList.length; index++) {
+      if (activityList[index][1] == name ){
+        activities.add(activityList[index]);
+      }
+    }
+    return activities;
+  }
+  
   bool isSameMonth(DateTime date1, DateTime date2) {
     return date1.year == date2.year && date1.month == date2.month;
   }
 
   double durationToMinutes(Duration duration) {
     return duration.inSeconds / 60.0;
+  }
+
+  List<dynamic> getThisActivitiesByFilter(String filter, String categoryName){
+    switch (filter) {
+      case "Month":
+        return getThisMonthActivities(categoryName);
+      case "Week":
+        return getThisWeekActivities(categoryName);
+      case "Today":
+        return getTodayActivities(categoryName);
+      default:
+        return getAllCategoryActivities(categoryName);
+    }
   }
 
 }

@@ -1,7 +1,7 @@
 /// author(s): xjesko01
 import 'package:flutter/material.dart';
 
-enum Selector { Today, Week, Month, ALL}
+enum Selector { Today, Week, Month, ALL }
 
 class SingleChoice extends StatefulWidget {
   final Selector selectorView;

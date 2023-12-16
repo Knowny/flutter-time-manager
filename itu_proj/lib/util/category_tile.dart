@@ -14,7 +14,7 @@ class CategoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return 
     Padding(
-      padding:  EdgeInsets.all(10),
+      padding:  EdgeInsets.all(0),
       child: Column(
         children: [
           CircleAvatar(
@@ -27,7 +27,7 @@ class CategoryTile extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: EdgeInsets.only(top: 5.0),
+            padding: EdgeInsets.only(top: 0),
             child: Text(
               '${categoryName}'
             )
