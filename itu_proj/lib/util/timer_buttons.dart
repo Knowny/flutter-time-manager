@@ -4,8 +4,10 @@ class RestartButton extends StatelessWidget{
   const RestartButton({
     Key? key,
     required this.text,
+    required this.clicked,
   }) : super(key: key);
   final String text;
+  final bool clicked;
 
   @override
   Widget build(BuildContext context) {
@@ -17,13 +19,16 @@ class RestartButton extends StatelessWidget{
         height: 40,
         width: 300,
         decoration: BoxDecoration(
-          color: Colors.grey[850],
+          color: clicked ? Colors.grey: Colors.grey[850],
           border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(25),
         ),
         child: Center(
           child: Text(
           text,
+          style: TextStyle(
+            color: clicked ? Colors.grey[850] : Colors.grey
+          ),
         ),
         )
         
@@ -52,7 +57,7 @@ class RoundButtonLeft extends StatelessWidget {
       height: size,
       width: size < 50 ? size*2 : size*3,
       decoration: BoxDecoration(
-        color: clicked ? Colors.orange.withOpacity(0.6) : Colors.grey[850],
+        color: clicked ? Colors.orange : Colors.grey[850],
         border: Border.all(color: Colors.orange),
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(25), 
@@ -86,7 +91,7 @@ class RoundButtonRight extends StatelessWidget {
       height: size,
       width: size < 50 ? size*2 : size*3,
       decoration: BoxDecoration(
-        color: clicked ? Colors.orange.withOpacity(0.6) : Colors.grey[850],
+        color: clicked ? Colors.orange : Colors.grey[850],
         border: Border.all(color: Colors.orange),
         borderRadius: const BorderRadius.only(
           topRight: Radius.circular(25), 

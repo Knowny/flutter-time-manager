@@ -61,24 +61,26 @@ class ToDoDatabase {
       ["Free Time", Colors.yellow],
       ["Socialising", Colors.orange]
     ];
-
     activityList = [
     // ["ACTIVITY_NAME", "CATEGORY", date(dateTime), timeSpent (seconds)]
-      ["Learning Japanese", "School", DateTime.now(), 60*30],
-      ["Push Ups", "Sport", DateTime.now(), 60*10],
-      ["Watching Spidrman", "Free Time", DateTime.now(), 60*120],
-      ["Talking with Jessica", "Socialising", DateTime.now(), 60*5],
+      ["Learning Japanese", "School", DateTime.now(), const Duration(minutes: 30)],
+      ["Push Ups", "Sport", DateTime.now(), const Duration(minutes: 10)],
+      ["Watching Spidrman", "Free Time", DateTime.now(), const Duration(hours: 2)],
+      ["Talking with Jessica", "Socialising", DateTime.now(), const Duration(minutes: 5)],
+      ["Watching Witchur", "Free Time", DateTime.now(), const Duration(minutes: 30)],
+      ["Talking with Jamal", "Socialising", DateTime.now(), const Duration(minutes: 10)],
+      ["Watching Witchur", "Free Time", DateTime.now(), const Duration(minutes: 30)],
+      ["Talking with Ferdinand", "Socialising", DateTime.now(), const Duration(minutes: 3)],
     ];
     
     categoryList = [
     // ["NAME","COLOR"]
-      ["School", Colors.red, 60*30],
-      ["Sport", Colors.blue, 60*10],
-      ["Free Time", Colors.yellow, 60*120],
-      ["Socialising", Colors.orange, 60*5]
+      ["School", Colors.red],
+      ["Sport", Colors.blue],
+      ["Free Time", Colors.yellow],
+      ["Socialising", Colors.orange]
     ];
   }
-
   // load the data from db
   void loadData() {
     taskList = _myBox.get("TASKLIST");  // TODO RENAME TO TASKLIST
