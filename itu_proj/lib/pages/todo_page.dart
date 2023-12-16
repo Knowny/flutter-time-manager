@@ -12,6 +12,8 @@ import 'package:itu_proj/util/habit_tile.dart';
 import 'package:itu_proj/util/task_dialog_box.dart';
 import 'package:itu_proj/util/task_tile.dart';
 
+// https://github.com/mitchkoko/ToDoFlutter
+// https://github.com/mitchkoko/HabitTrackerFlutter
 // https://stackoverflow.com/questions/65657495/flutter-debuglifecyclestate-elementlifecycle-defunct-is-not-true
 // https://api.flutter.dev/flutter/dart-core/List/sort.html
 
