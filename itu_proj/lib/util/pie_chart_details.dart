@@ -40,11 +40,11 @@ class _PieChartDetailsState extends State<PieChartDetails> {
                 child: (widget.categoryName == "") 
                   ? ListTile( //list categories
                       title: Text(widget.db.categoryList[index][0].toString(), style: TextStyle(color: widget.db.getCategoryColor(widget.db.categoryList[index][0])),),
-                      trailing: Text(formatDuration(widget.db.getCategoryDuration(widget.db.categoryList[index][0]))),
+                      trailing: Text(formatDouble(widget.db.getCategoryDuration(widget.filter.name,widget.db.categoryList[index][0]))),
                       )
                   : ListTile( // list activities
                     title: Text(activities[index][0].toString(), style: TextStyle(color: widget.db.getCategoryColor(activities[index][1])),),
-                    trailing: Text(formatDuration(widget.db.getCategoryDuration(widget.db.categoryList[index][0]))),
+                    trailing: Text(formatDuration(activities[index][3])),
                   ),
               ),
           );
@@ -63,4 +63,18 @@ class _PieChartDetailsState extends State<PieChartDetails> {
 
     return '$hoursString:$minutesString:$secondsString';
   }
+
+  String formatDouble(double minutes) {
+    int totalSeconds = (minutes * 60).round();
+    int hours = totalSeconds ~/ 3600;
+    int minutesPart = (totalSeconds ~/ 60) % 60;
+    int remainingSeconds = totalSeconds % 60;
+
+    String hoursString = hours.toString().padLeft(2, '0');
+    String minutesString = minutesPart.toString().padLeft(2, '0');
+    String secondsString = remainingSeconds.toString().padLeft(2, '0');
+
+    return '$hoursString:$minutesString:$secondsString';
+  }
+
 }

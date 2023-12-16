@@ -140,7 +140,7 @@ class _CalendarPageState extends State<CalendarPage> {
                 height: 300,
                 child: (activities.isNotEmpty)
                     ? ActivitiesList(
-                        activities: db.getActivitiesByDay(selectedDay),
+                        activities: activities,
                         editActivity: editActivity,
                         db: db,
                       )
@@ -150,7 +150,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         ),
       ),
-      floatingActionButton: (selectedDay.isBefore(DateTime.now().add(const Duration(days: 1))))
+      floatingActionButton: (selectedDay.isBefore(DateTime.now())) //.add(const Duration(days: 1))
           ? FloatingActionButton(
               onPressed: createNewActivity,
               child: const Icon(Icons.add),

@@ -60,7 +60,6 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     } else if (db.getActivity(widget.controller.text).isNotEmpty){
       widget.controller.clear();
     }
-    print(widget.activity);
     return AlertDialog(
       surfaceTintColor: Colors.black,
       backgroundColor: Colors.grey[850],
@@ -177,6 +176,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                   ),
                 ),
               ),
+              const SizedBox(width: 10),
               Expanded(
                 // picking end time
                 child: Container(
@@ -355,35 +355,24 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     int hours = duration.inHours;
     int minutes = (duration.inMinutes % 60);
     int seconds = (duration.inSeconds % 60);
-    
-    String period = (hours >= 12) ? 'PM' : 'AM';
-
-    if (hours > 12) {
-      hours -= 12;
-    }
 
     String hoursString = hours.toString().padLeft(2, '0');
     String minutesString = minutes.toString().padLeft(2, '0');
     String secondsString = seconds.toString().padLeft(2, '0');
 
-    return '$hoursString:$minutesString:$secondsString $period';
+    return '$hoursString:$minutesString:$secondsString';
   }
 
   String formatDayTime(DateTime time) {
     int hours = time.hour;
     int minutes = time.minute;
     int seconds = time.second;
-    String period = (hours >= 12) ? 'PM' : 'AM';
-
-    if (hours > 12) {
-      hours -= 12;
-    }
 
     String hoursString = hours.toString().padLeft(2, '0');
     String minutesString = minutes.toString().padLeft(2, '0');
     String secondsString = seconds.toString().padLeft(2, '0');
 
-    return '$hoursString:$minutesString:$secondsString $period';
+    return '$hoursString:$minutesString:$secondsString';
   }
 
   // empty name

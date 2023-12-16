@@ -33,12 +33,6 @@ class ActivitiesList extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
-                  // leading: CategoryTile(
-                  //     categoryName: activities[index][1],
-                  //     categoryColor: db.getCategoryColor(activities[index][1]),
-                  //   ),
-                  // title: Text(activities[index][0].toString()),
-                  // subtitle: Text(formatDuration(activities[index][2], activities[index][3])),
                   title: Text(activities[index][0].toString()),
                   subtitle: Text(activities[index][1].toString(), style: TextStyle(color: db.getCategoryColor(activities[index][1].toString())),),
                   trailing: Text(formatDuration(activities[index][2], activities[index][3])),
@@ -64,16 +58,10 @@ class ActivitiesList extends StatelessWidget {
     int minutes = time.minute;
     int seconds = time.second;
 
-    String period = (hours >= 12) ? 'PM' : 'AM';
-
-    if (hours > 12) {
-      hours -= 12;
-    }
-
     String hoursString = hours.toString().padLeft(2, '0');
     String minutesString = minutes.toString().padLeft(2, '0');
     String secondsString = seconds.toString().padLeft(2, '0');
 
-    return '$hoursString:$minutesString:$secondsString $period';
+    return '$hoursString:$minutesString:$secondsString';
   }
 }

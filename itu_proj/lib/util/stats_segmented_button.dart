@@ -21,7 +21,7 @@ class _SingleChoiceState extends State<SingleChoice> {
   @override
   void initState() {
     selectorView =
-        widget.selectorView; // Initialize selectorView with the provided value
+        widget.selectorView;
     super.initState();
   }
 
@@ -38,7 +38,7 @@ class _SingleChoiceState extends State<SingleChoice> {
             return Colors.grey.shade800;
           },
         ),
-        minimumSize: MaterialStateProperty.all(Size(80,40)),
+        minimumSize: MaterialStateProperty.all(const Size(80,40)),
       ),
       segments: const <ButtonSegment<Selector>>[
         ButtonSegment<Selector>(

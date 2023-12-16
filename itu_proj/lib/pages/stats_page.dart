@@ -17,7 +17,7 @@ class _StatsPageState extends State<StatsPage> {
   Selector selectorView = Selector.Today;
   final _myBox = Hive.box('mybox');
   ToDoDatabase db = ToDoDatabase();
-  int touchedIndex = 0;
+  int touchedIndex = -1;
   @override
   void initState() {
     if (_myBox.get("CATEGORYLIST") == null) {
@@ -50,9 +50,11 @@ class _StatsPageState extends State<StatsPage> {
               db: db, 
               selectorView: selectorView,
               onTouchedIndexChanged: (index) {
-                touchedIndex = index;
+                setState(() {
+                  touchedIndex = index;
+                });
               },)
-          ),
+        ),
         SizedBox(
           height: 200,
           child: PieChartDetails(

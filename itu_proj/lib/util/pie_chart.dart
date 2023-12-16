@@ -2,7 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:itu_proj/data/database.dart';
-import 'package:itu_proj/util/pie_chart_details.dart';
 import 'package:itu_proj/util/stats_segmented_button.dart';
 
 class MyPieChart extends StatefulWidget {

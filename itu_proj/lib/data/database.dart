@@ -120,19 +120,22 @@ class ToDoDatabase {
     return totalTime;
   }
 
-  Duration getCategoryDuration(String name){
-    Duration totalTime = const Duration(minutes: 0);
-    for (var index = 0; index < activityList.length; index++) {
-      if (activityList[index][1] == name ){
-        totalTime += activityList[index][3];
+  double getCategoryDuration(String filter, String name){
+    switch (filter) {
+        case "Month":
+          return getThisMonthTotal(name);
+        case "Week":
+          return getThisWeekTotal(name);
+        case "Today":
+          return getTodayTotal(name);
+        default:
+          return getCategoryTime(name);
       }
-    }
-    return totalTime;
   }
 
   List<dynamic> getActivitiesByDay(DateTime when) {
     return activityList.where((activity) {
-      DateTime activityDate = activity[2]; // Assuming the date is stored at index 2
+      DateTime activityDate = activity[2];
       return isSameDay(activityDate, when);
     }).toList();
   }
