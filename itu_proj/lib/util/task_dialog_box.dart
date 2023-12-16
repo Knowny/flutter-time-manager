@@ -18,15 +18,6 @@ class TaskDialogBox extends StatelessWidget {
     required this.onCancel,
   });
 
-  // * SNACKBAR - TASK ADDED
-  final snackBar = SnackBar(
-    content: Text(
-      'Task added successfully',
-      style: TextStyle(color: Colors.grey.shade900),
-    ),
-    backgroundColor: Colors.lightGreen.withOpacity(0.5),
-  );
-
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
