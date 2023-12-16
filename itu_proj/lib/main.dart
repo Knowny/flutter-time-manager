@@ -1,16 +1,14 @@
 /// author(s): xhusar11
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-// import 'package:itu_proj/util/todo_segmented_button.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:itu_proj/util/adapters.dart';
 import 'package:itu_proj/pages/todo_page.dart';
 import 'package:itu_proj/pages/timer_page.dart';
 import 'package:itu_proj/pages/stats_page.dart';
 import 'package:itu_proj/pages/calendar_page.dart';
 import 'package:itu_proj/pages/settings_page.dart';
-import 'package:itu_proj/util/adapters.dart';
 
-// import 'package:google_fonts/google_fonts.dart'; // for google fonts
 
 void main() async {
   AwesomeNotifications().initialize(

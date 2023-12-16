@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:itu_proj/util/my_button.dart';
 
-//https://stackoverflow.com/questions/54775097/formatting-a-duration-like-hhmmss
+// https://stackoverflow.com/questions/54775097/formatting-a-duration-like-hhmmss
 // https://api.flutter.dev/flutter/cupertino/CupertinoTimerPicker-class.html
 
 // *========================== HABIT DIALOG ==========================*//
@@ -28,7 +28,7 @@ class HabitDialogBox extends StatefulWidget {
 
 class _HabitDialogBoxState extends State<HabitDialogBox> {
   // variable to store the selected time
-  Duration selectedDuration = Duration(hours: 0, minutes: 0, seconds: 0);
+  Duration selectedDuration = const Duration(hours: 0, minutes: 0, seconds: 0);
 
   // * FORMAT THE DURATION to HH:mm:ss
   format(Duration d) => d.toString().split('.').first.padLeft(8, "0");
@@ -60,7 +60,7 @@ class _HabitDialogBoxState extends State<HabitDialogBox> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CupertinoButton(
-                      child: Text('SELECT'),
+                      child: const Text('SELECT'),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
