@@ -1,6 +1,10 @@
-// author(s): xhusar11
+/// author(s): xhusar11
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
+
+// https://pub.dev/packages/flutter_slidable
+
+// *========================== TASK TILE ==========================*//
 
 class TaskTile extends StatelessWidget {
   final String taskName;
@@ -29,7 +33,7 @@ class TaskTile extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: Slidable(
         endActionPane: ActionPane(
-          motion: const StretchMotion(),
+          motion: const DrawerMotion(),
           extentRatio: 0.66,
           children: [
             // *FAVOURITES OPTION
@@ -39,7 +43,6 @@ class TaskTile extends StatelessWidget {
               backgroundColor: Colors.grey.shade400,
               borderRadius: BorderRadius.circular(12),
             ),
-
             // * EDIT OPTION
             SlidableAction(
               onPressed: editFunction,

@@ -1,6 +1,10 @@
 /// author(s): xhusar11en
 import 'package:flutter/material.dart';
 
+// https://api.flutter.dev/flutter/material/SegmentedButton-class.html
+
+// *========================== SEGMENTED BUTTON ==========================*//
+
 enum Selector { Tasks, Habits }
 
 class SingleChoice extends StatefulWidget {

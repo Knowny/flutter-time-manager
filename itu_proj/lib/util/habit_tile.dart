@@ -1,10 +1,9 @@
-// author(s): xhusar11
-
-// import 'dart:html';
-
+/// author(s): xhusar11
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:percent_indicator/percent_indicator.dart';
+
+// *========================== HABIT TILE ==========================*//
 
 class HabitTile extends StatelessWidget {
   final String habitName;
@@ -57,7 +56,6 @@ class HabitTile extends StatelessWidget {
 
   // calculate the percentage of the progress bar
   double percentCompleted() {
-    // seconds / seconds
     return timeSpent / timeDuration;
   }
 
@@ -67,7 +65,7 @@ class HabitTile extends StatelessWidget {
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 16.0),
       child: Slidable(
         endActionPane: ActionPane(
-          motion: const StretchMotion(),
+          motion: const DrawerMotion(),
           extentRatio: 0.66,
           children: [
             // * ADD TO FAVOURITES OPTION
@@ -120,7 +118,7 @@ class HabitTile extends StatelessWidget {
                             ? percentCompleted()
                             : 1, // cap the percent to 1
                         progressColor: Colors
-                            .orange, //todo - suggestion -> the progress bar color should be the color of the category
+                            .orange,
                       ),
                       Center(
                         child: Icon(
@@ -157,12 +155,7 @@ class HabitTile extends StatelessWidget {
                   const SizedBox(height: 8.0),
                   // * PROGRESS TEXT
                   Text(
-                    seconds2hhmmssFormated(timeSpent) +
-                        ' / ' +
-                        seconds2hhmmssFormated(timeDuration) +
-                        ' = ' +
-                        (percentCompleted() * 100).toStringAsFixed(0) +
-                        '%',
+                    '${seconds2hhmmssFormated(timeSpent)} / ${seconds2hhmmssFormated(timeDuration)} = ${(percentCompleted() * 100).toStringAsFixed(0)}%',
                     style: const TextStyle(
                       color: Colors.grey,
                     ),
