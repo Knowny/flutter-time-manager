@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
                 Tab(icon: Icon(Icons.timer)),
                 Tab(icon: Icon(Icons.bar_chart)),
                 Tab(icon: Icon(Icons.calendar_month)),
-                Tab(icon: Icon(Icons.settings)),
+                Tab(icon: Icon(Icons.category)),
               ],
             ),
             // title: const Text('Tabs Demo'),  // no title
