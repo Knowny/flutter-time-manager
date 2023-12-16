@@ -1,15 +1,21 @@
 /// author(s): xhusar11
 import 'dart:async';
-
-import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:flutter/material.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+
 import 'package:itu_proj/data/database.dart';
+import 'package:itu_proj/util/todo_segmented_button.dart';
+import 'package:itu_proj/util/todo_dialogs.dart';
 import 'package:itu_proj/util/habit_dialog_box.dart';
 import 'package:itu_proj/util/habit_tile.dart';
 import 'package:itu_proj/util/task_dialog_box.dart';
-import 'package:itu_proj/util/todo_segmented_button.dart';
-import '../util/task_tile.dart';
+import 'package:itu_proj/util/task_tile.dart';
+
+// https://stackoverflow.com/questions/65657495/flutter-debuglifecyclestate-elementlifecycle-defunct-is-not-true
+// https://api.flutter.dev/flutter/dart-core/List/sort.html
+
+// *========================== TODO_PAGE ==========================*//
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -19,8 +25,6 @@ class TodoPage extends StatefulWidget {
 }
 
 // * AUTOMATIC KEEP ALIVE
-//https://stackoverflow.com/questions/65657495/flutter-debuglifecyclestate-elementlifecycle-defunct-is-not-true
-
 class _TodoPageState extends State<TodoPage>
     with AutomaticKeepAliveClientMixin {
   // select tasks
@@ -50,6 +54,13 @@ class _TodoPageState extends State<TodoPage>
 
   @override
   bool get wantKeepAlive => true;
+
+  // * Task name controller
+  final _taskNameController = TextEditingController();
+  // * Habit name controller
+  final _habitNameController = TextEditingController();
+  // * Habit duration controller
+  final _habitDurationController = TextEditingController();
 
   // send notification (android only)
   triggerNotification(String habitName) {
@@ -84,33 +95,23 @@ class _TodoPageState extends State<TodoPage>
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  // * Task name controller
-  final _taskNameController = TextEditingController();
-
-  // * Habit name controller
-  final _habitNameController = TextEditingController();
-  // * Habit duration controller
-  final _habitDurationController = TextEditingController();
+  // *========================== HABIT FUNCTIONS ==========================*//
 
   // * ADD/REMOVE HABIT TO/FROM FAVOURITES
   void addHabitToFavourites(int index) {
     // variable for running timer check
     bool habitTimerActive = false;
-
     // any timer is running -> habitTimerActive = true
     for (var i = 0; i < db.habitList.length; i++) {
       if (db.habitList[i][2] == true) {
         habitTimerActive = true;
       }
     }
-
     // if no timer is running
     if (!habitTimerActive) {
       setState(() {
         db.habitList[index][5] = !db.habitList[index][5];
       });
-
-      // https://api.flutter.dev/flutter/dart-core/List/sort.html
       // sort the list, so the favourites are before the non-favourites
       db.habitList.sort((a, b) {
         if (a[5] && !b[5]) {
@@ -124,7 +125,7 @@ class _TodoPageState extends State<TodoPage>
       db.updateDataBase();
     } else {
       // alert the user to turn off the timer(s)
-      _addHabitToFavouritesWhileActiveDialog(context);
+      addHabitToFavouritesWhileActiveDialog(context);
     }
   }
 
@@ -152,7 +153,6 @@ class _TodoPageState extends State<TodoPage>
         db.habitList[index][2] = !db.habitList[index][2];
       });
       db.updateDataBase();
-
       // used, because the time in db is stored in seconds, not milliseconds
       var iterator = 0;
       // check if habit is active
@@ -183,7 +183,6 @@ class _TodoPageState extends State<TodoPage>
               if ((db.habitList[index][3] >= (db.habitList[index][4]))) {
                 // send notification
                 triggerNotification(db.habitList[index][0]);
-
                 // set the habit state to completed
                 db.habitList[index][1] = true;
               }
@@ -228,11 +227,11 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
-      _habitAddedSnackBar(context);
+      habitAddedSnackBar(context);
     } else if ((newHabitName.isNotEmpty) && (habitDuration <= 0)) {
-      _showEmptyHabitDurationDialog(context);
+      showEmptyHabitDurationDialog(context);
     } else {
-      _showEmptyHabitNameDialog(context);
+      showEmptyHabitNameDialog(context);
     }
   }
 
@@ -273,11 +272,11 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
-      _habitEditedSnackBar(context);
+      habitEditedSnackBar(context);
     } else if ((newName.isNotEmpty) && (hhmmss2Seconds(newDuration) <= 0)) {
-      _showEmptyHabitDurationDialog(context);
+      showEmptyHabitDurationDialog(context);
     } else {
-      _showEmptyHabitNameDialog(context);
+      showEmptyHabitNameDialog(context);
     }
   }
 
@@ -287,190 +286,10 @@ class _TodoPageState extends State<TodoPage>
       db.habitList.removeAt(index);
     });
     db.updateDataBase();
-    _habitDeletedSnackBar(context);
+    habitDeletedSnackBar(context);
   }
 
-  // https://api.flutter.dev/flutter/material/SnackBar-class.html
-  // * SNACKBAR - TASK ADDED
-  void _taskAddedSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Task added successfully',
-          style: TextStyle(color: Colors.grey.shade900),
-        ),
-        backgroundColor: Colors.lightGreen.withOpacity(0.8),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        width: 220.0,
-      ),
-    );
-  }
-
-  // * SNACKBAR - TASK EDITED
-  void _taskEditedSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Task edited successfully',
-          style: TextStyle(color: Colors.grey.shade900),
-        ),
-        backgroundColor: Colors.grey.shade300.withOpacity(0.8),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        width: 220.0,
-      ),
-    );
-  }
-
-  // * SNACKBAR - TASK DELETED
-  void _taskDeletedSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Task deleted successfully',
-          style: TextStyle(color: Colors.grey.shade200),
-        ),
-        backgroundColor: Colors.red.withOpacity(0.8),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        width: 220.0,
-      ),
-    );
-  }
-
-  // * SNACKBAR - HABIT ADDED
-  void _habitAddedSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Habit added successfully',
-          style: TextStyle(color: Colors.grey.shade900),
-        ),
-        backgroundColor: Colors.lightGreen.withOpacity(0.8),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        width: 220.0,
-      ),
-    );
-  }
-
-  // * SNACKBAR - HABIT EDITED
-  void _habitEditedSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Habit edited successfully',
-          style: TextStyle(color: Colors.grey.shade900),
-        ),
-        backgroundColor: Colors.grey.shade300.withOpacity(0.8),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        width: 220.0,
-      ),
-    );
-  }
-
-  // * SNACKBAR - HABIT DELETED
-  void _habitDeletedSnackBar(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Habit deleted successfully',
-          style: TextStyle(color: Colors.grey.shade200),
-        ),
-        backgroundColor: Colors.red.withOpacity(0.8),
-        duration: const Duration(seconds: 2),
-        behavior: SnackBarBehavior.floating,
-        width: 220.0,
-      ),
-    );
-  }
-
-  // * EMPTY NAME ALERT - TASK
-  void _showEmptyNameDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Invalid Task name.'),
-          content: const Text('Task name can not be empty.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // * EMPTY NAME ALERT - HABIT
-  void _showEmptyHabitNameDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Invalid Habit name.'),
-          content: const Text('Habit name can not be empty.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // * EMPTY DURATION ALERT - HABIT
-  void _showEmptyHabitDurationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Set the habit duration.'),
-          content: const Text('Habit duration can not be 00:00:00.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // * ADD HABIT TO FAVOURITES (timer still running) DIALOG
-  void _addHabitToFavouritesWhileActiveDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text('Turn of the Habit timers.'),
-          content: const Text(
-              'In order to set Habit as favourite, turn of all Habit timers.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // *========================== TASK FUNCTIONS ==========================*//
 
   // * TAPPED CHECKBOX - TASK
   void checkBoxChanged(bool? value, int index) {
@@ -486,7 +305,6 @@ class _TodoPageState extends State<TodoPage>
       db.taskList[index][2] = !db.taskList[index][2];
     });
 
-    // https://api.flutter.dev/flutter/dart-core/List/sort.html
     // sort the list, so the favourites are before the non-favourites
     db.taskList.sort((a, b) {
       if (a[2] && !b[2]) {
@@ -528,9 +346,9 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
-      _taskAddedSnackBar(context);
+      taskAddedSnackBar(context);
     } else {
-      _showEmptyNameDialog(context);
+      showEmptyNameDialog(context);
     }
   }
 
@@ -564,9 +382,9 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
-      _taskEditedSnackBar(context);
+      taskEditedSnackBar(context);
     } else {
-      _showEmptyNameDialog(context);
+      showEmptyNameDialog(context);
     }
   }
 
@@ -576,8 +394,10 @@ class _TodoPageState extends State<TodoPage>
       db.taskList.removeAt(index);
     });
     db.updateDataBase();
-    _taskDeletedSnackBar(context);
+    taskDeletedSnackBar(context);
   }
+
+  // *========================== VIEW WIDGET ==========================*//
 
   // * BUILD PAGE
   @override

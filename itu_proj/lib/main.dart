@@ -20,8 +20,7 @@ void main() async {
       NotificationChannel(
           channelKey: 'basic_channel',
           channelName: 'Basic notifications',
-          channelDescription: 'Notification channel for basic tests'
-      ),
+          channelDescription: 'Notification channel for basic tests'),
     ],
     debug: true,
   );
@@ -50,9 +49,6 @@ class MyApp extends StatelessWidget {
           backgroundColor: Colors.grey[850],
           brightness: Brightness.dark,
         ),
-        // textTheme: TextTheme(
-        // //google fonts applicable
-        // ),
       ),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
@@ -68,9 +64,7 @@ class MyApp extends StatelessWidget {
                 Tab(icon: Icon(Icons.settings)),
               ],
             ),
-            // title: const Text('Tabs Demo'),  // no title
-            toolbarHeight:
-                0, // not text -> as much space for application as possible
+            toolbarHeight: 0,
           ),
           body: const TabBarView(
             children: [

@@ -1,6 +1,10 @@
-// author(s): xhusar11
+/// author(s): xhusar11
 import 'package:flutter/material.dart';
 import 'package:itu_proj/util/my_button.dart';
+
+// https://api.flutter.dev/flutter/material/AlertDialog-class.html
+
+// *========================== TASK DIALOG BOX ==========================*//
 
 class TaskDialogBox extends StatelessWidget {
   final taskNameController;
@@ -13,15 +17,6 @@ class TaskDialogBox extends StatelessWidget {
     required this.onSave,
     required this.onCancel,
   });
-
-  // * SNACKBAR - TASK ADDED
-  final snackBar = SnackBar(
-    content: Text(
-      'Task added successfully',
-      style: TextStyle(color: Colors.grey.shade900),
-    ),
-    backgroundColor: Colors.lightGreen.withOpacity(0.5),
-  );
 
   @override
   Widget build(BuildContext context) {
