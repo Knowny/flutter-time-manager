@@ -50,6 +50,9 @@ class _SettingsPageState extends State<SettingsPage> {
           onCancel: () => Navigator.of(context).pop(),
           // categoryList: categoryList,
           // onCategorySelected: onCategorySelected
+          onColorChange: (){
+            
+          },
         );
       },
     );
@@ -100,6 +103,9 @@ class _SettingsPageState extends State<SettingsPage> {
               Navigator.of(context).pop();
               _categoryNameController.clear();
               _categoryColorController.clear();
+            },
+            onColorChange: (){
+
             },
           );
         });
