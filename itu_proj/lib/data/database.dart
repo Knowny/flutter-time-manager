@@ -1,16 +1,9 @@
-// author(s): xhusar11
+// author(s): xhusar11, xjesko01
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-var colorMap = {
-  "Grey": Colors.grey[850],
-  "Orange": Colors.orange,
-  "Red": Colors.red,
-  "Blue": Colors.blue,
-  "Yellow": Colors.yellow
-};
-
+// author: xhusar11
 class ToDoDatabase {
   // * TASK LIST
   List taskList = [];
@@ -163,7 +156,6 @@ class ToDoDatabase {
   }
 
   // author: xjesko
-
   List<dynamic> getActivity(String name) {
     for (var activity in activityList) {
       if (activity[0] == name) {
