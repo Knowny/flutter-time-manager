@@ -284,6 +284,40 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
 
     return Duration(hours: hours, minutes: minutes, seconds: seconds);
   }
+    Duration calculateDuration(Duration? startTime, Duration? endTime) {
+    // calculate duration from start to end times
+    if (startTime == null || endTime == null) {
+      return const Duration(hours: 0, minutes: 0, seconds: 0);
+    }
+
+    return (startTime - endTime).abs();
+  }
+
+  String formatDuration(Duration duration) {
+    // format duration to readable string
+    int hours = duration.inHours;
+    int minutes = (duration.inMinutes % 60);
+    int seconds = (duration.inSeconds % 60);
+
+    String hoursString = hours.toString().padLeft(2, '0');
+    String minutesString = minutes.toString().padLeft(2, '0');
+    String secondsString = seconds.toString().padLeft(2, '0');
+
+    return '$hoursString:$minutesString:$secondsString';
+  }
+
+  String formatDayTime(DateTime time) {
+    // format datetime to readable string
+    int hours = time.hour;
+    int minutes = time.minute;
+    int seconds = time.second;
+
+    String hoursString = hours.toString().padLeft(2, '0');
+    String minutesString = minutes.toString().padLeft(2, '0');
+    String secondsString = seconds.toString().padLeft(2, '0');
+
+    return '$hoursString:$minutesString:$secondsString';
+  }
 
   void saveNewActivity() {
     // check input correctness and create newActivity and call save activity
@@ -317,6 +351,10 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
       }
     }
   }
+
+  //*                          *//
+  //  Checking input and aletrs //
+  //*                          *//
 
   bool checkFutureTest(DateTime startTime, DateTime endTime){    
     // Check the duration start and end so you don't create something in the future
@@ -364,41 +402,6 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
       return false;
     }
     return true;
-  }
-
-  Duration calculateDuration(Duration? startTime, Duration? endTime) {
-    // calculate duration from start to end times
-    if (startTime == null || endTime == null) {
-      return const Duration(hours: 0, minutes: 0, seconds: 0);
-    }
-
-    return (startTime - endTime).abs();
-  }
-
-  String formatDuration(Duration duration) {
-    // format duration to readable string
-    int hours = duration.inHours;
-    int minutes = (duration.inMinutes % 60);
-    int seconds = (duration.inSeconds % 60);
-
-    String hoursString = hours.toString().padLeft(2, '0');
-    String minutesString = minutes.toString().padLeft(2, '0');
-    String secondsString = seconds.toString().padLeft(2, '0');
-
-    return '$hoursString:$minutesString:$secondsString';
-  }
-
-  String formatDayTime(DateTime time) {
-    // format datetime to readable string
-    int hours = time.hour;
-    int minutes = time.minute;
-    int seconds = time.second;
-
-    String hoursString = hours.toString().padLeft(2, '0');
-    String minutesString = minutes.toString().padLeft(2, '0');
-    String secondsString = seconds.toString().padLeft(2, '0');
-
-    return '$hoursString:$minutesString:$secondsString';
   }
 
   // empty name

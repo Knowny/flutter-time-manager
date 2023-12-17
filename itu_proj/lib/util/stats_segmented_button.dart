@@ -26,7 +26,7 @@ class _SingleChoiceState extends State<SingleChoice> {
   }
 
   @override
-Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return IntrinsicWidth(
       stepWidth: 120,
       child: SegmentedButton<Selector>(
