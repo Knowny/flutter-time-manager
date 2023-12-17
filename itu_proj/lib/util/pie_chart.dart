@@ -4,6 +4,8 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/stats_segmented_button.dart';
 
+/// source: https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/pie_chart.md
+
 class MyPieChart extends StatefulWidget {
   final ToDoDatabase db;
   final Selector selectorView;

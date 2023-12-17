@@ -6,6 +6,8 @@ import 'package:itu_proj/util/activity_dialog_box.dart';
 import 'package:itu_proj/util/activity_list.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+// source: https://github.com/aleksanderwozniak/table_calendar
+
 class CalendarPage extends StatefulWidget {
   const CalendarPage({super.key});
 
