@@ -4,8 +4,8 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 var colorMap = {
-  "Orange" : Colors.orange,
   "Grey" : Colors.grey[850],
+  "Orange" : Colors.orange,
   "Red" : Colors.red,
   "Blue" : Colors.blue,
   "Yellow" : Colors.yellow
@@ -29,7 +29,7 @@ class ToDoDatabase {
       ["Create the database", false, false],
       ["Pass the ITU", false, false],
     ];
-    // todo better formatting
+
     // habitName, isCompleted, isHabitActive, timeSpent (sec), timeDuration (min), isFavourite, category
     habitList = [
       ["Test the timer", false, false, 0, 1*60, false],
@@ -54,13 +54,6 @@ class ToDoDatabase {
       ["Talking with Ferdinand", "Socialising", DateTime.now(), const Duration(minutes: 3)],
     ];
     
-    categoryList = [
-    // ["NAME","COLOR"]
-      ["School", Colors.red],
-      ["Sport", Colors.blue],
-      ["Free Time", Colors.yellow],
-      ["Socialising", Colors.orange]
-    ];
     activityList = [
     // ["ACTIVITY_NAME", "CATEGORY", date(dateTime), timeSpent (seconds)]
       ["Learning Japanese", "School", DateTime.now(), const Duration(minutes: 30)],
@@ -78,12 +71,12 @@ class ToDoDatabase {
       ["School", Colors.red],
       ["Sport", Colors.blue],
       ["Free Time", Colors.yellow],
-      ["Socialising", Colors.orange]
+      ["Socialising", Colors.orange],
     ];
   }
   // load the data from db
   void loadData() {
-    taskList = _myBox.get("TASKLIST");  // TODO RENAME TO TASKLIST
+    taskList = _myBox.get("TASKLIST");
     habitList = _myBox.get("HABITLIST");
     activityList = _myBox.get("ACTIVITYLIST");
     categoryList = _myBox.get("CATEGORYLIST");

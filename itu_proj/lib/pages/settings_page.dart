@@ -4,6 +4,7 @@ import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/category_settings.dart';
 import '../util/category_tile_long.dart';
+import 'package:itu_proj/util/category_dialogs.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -13,27 +14,66 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-// refference the hive box
-  final _myBox = Hive.box('mybox');
-  ToDoDatabase db = ToDoDatabase(); //! RENAME?!?!
+
+  late Box _myBox;
+  // !REMANE
+  late ToDoDatabase db;
 
   @override
   void initState() {
+    // refference the hive box
+    // final _myBox = Hive.box('mybox');
+    // ToDoDatabase db = ToDoDatabase();
+
     // 1st time ever opening app -> create default data
+    // if (_myBox.get("CATEGORYLIST") == null) {
+    //   db.createInitialData();
+    // } else {
+    //   // data already exists
+    //   db.loadData();
+    // }
     // ! REWRITE !
+    super.initState();
+    _initHive();
+  }
+
+  // Asynchronous Initialization
+  Future<void> _initHive () async {
+    _myBox = Hive.box('mybox');
+    db = ToDoDatabase();
+
+    // 1st time ever opening app -> create initial data
     if (_myBox.get("CATEGORYLIST") == null) {
       db.createInitialData();
     } else {
-      // data already exists
       db.loadData();
     }
-    // ! REWRITE !
-    super.initState();
+  }
+
+  // https://stackoverflow.com/questions/73234954/how-i-can-convert-a-color-into-materialcolor-so-i-can-have-a-limited-pallete-of
+  MaterialColor getMaterialColor(Color color) {
+    final int red = color.red;
+    final int green = color.green;
+    final int blue = color.blue;
+
+    final Map<int, Color> shades = {
+      50: Color.fromRGBO(red, green, blue, .1),
+      100: Color.fromRGBO(red, green, blue, .2),
+      200: Color.fromRGBO(red, green, blue, .3),
+      300: Color.fromRGBO(red, green, blue, .4),
+      400: Color.fromRGBO(red, green, blue, .5),
+      500: Color.fromRGBO(red, green, blue, .6),
+      600: Color.fromRGBO(red, green, blue, .7),
+      700: Color.fromRGBO(red, green, blue, .8),
+      800: Color.fromRGBO(red, green, blue, .9),
+      900: Color.fromRGBO(red, green, blue, 1),
+    };
+
+    return MaterialColor(color.value, shades);
   }
 
   final _categoryNameController = TextEditingController();
 
-  // !CHANGE TO COLORS
   final _categoryColorController = TextEditingController();
 
   // create new category
@@ -44,15 +84,8 @@ class _SettingsPageState extends State<SettingsPage> {
         return CategoryDialogBox(
           categoryNameController: _categoryNameController,
           categoryColorController: _categoryColorController,
-
           onSave: saveNewCategory,
-
           onCancel: () => Navigator.of(context).pop(),
-          // categoryList: categoryList,
-          // onCategorySelected: onCategorySelected
-          onColorChange: (){
-            
-          },
         );
       },
     );
@@ -61,22 +94,30 @@ class _SettingsPageState extends State<SettingsPage> {
   // save new category
   void saveNewCategory() {
     String newCategoryName = _categoryNameController.text;
-    // !CHANGE TO COLOR
-    String newCategoryColor = _categoryColorController.text;
-    if ((newCategoryName.isNotEmpty) && (newCategoryColor.isNotEmpty)) {
+    String colorString = _categoryColorController.text;
+
+    Color newCategoryColor;
+
+    if (colorString.isNotEmpty) {
+      newCategoryColor =
+          Color(int.parse(colorString.replaceFirst('#', '0xFF')));
+    } else {
+      newCategoryColor = const Color(0xfff44336);
+    }
+
+    newCategoryColor = getMaterialColor(newCategoryColor);
+
+    if (newCategoryName.isNotEmpty) {
       setState(() {
-        db.categoryList
-            .add([_categoryNameController.text, _categoryColorController.text]);
+        db.categoryList.add([newCategoryName, newCategoryColor]);
         _categoryNameController.clear();
         _categoryColorController.clear();
       });
       Navigator.of(context).pop();
       db.updateDataBase();
-      // todo category added snackbar
-    } else if (newCategoryColor.isNotEmpty) {
-      // showEmptyCategoryNameDialog(context);
+      categoryAddedSnackBar(context);
     } else {
-      // showEmptyCategoryColorDialog(context);
+      showEmptyCategoryNameDialog(context);
     }
   }
 
@@ -85,9 +126,10 @@ class _SettingsPageState extends State<SettingsPage> {
     String currentCategoryName = db.categoryList[index][0];
     _categoryNameController.text = currentCategoryName;
 
-    // !change to colors
-    String currentCategoryColor = db.categoryList[index][0];
-    _categoryNameController.text = currentCategoryColor;
+    Color currentCategoryColor = db.categoryList[index][1];
+    String currentCategoryColorString =
+        currentCategoryColor.value.toRadixString(16).substring(2);
+    _categoryColorController.text = '#$currentCategoryColorString';
 
     showDialog(
         context: context,
@@ -98,35 +140,36 @@ class _SettingsPageState extends State<SettingsPage> {
             onSave: () {
               saveExistingCategory(index, _categoryNameController.text,
                   _categoryColorController.text);
+              Navigator.of(context).pop();
             },
             onCancel: () {
               Navigator.of(context).pop();
               _categoryNameController.clear();
               _categoryColorController.clear();
             },
-            onColorChange: (){
-
-            },
           );
         });
   }
 
   // save existing category
-  void saveExistingCategory(int index, String newName, String newColor) {
-    if (newName.isNotEmpty && newColor.isNotEmpty) {
+  void saveExistingCategory(int index, String newName, String colorString) {
+    if (newName.isNotEmpty) {
+      // if (newName.isNotEmpty && colorString.isNotEmpty) {
       setState(() {
         db.categoryList[index][0] = newName;
-        db.categoryList[index][1] = newColor;
+
+        Color newCategoryColor =
+            Color(int.parse(colorString.replaceFirst('#', '0xFF')));
+        newCategoryColor = getMaterialColor(newCategoryColor);
+
+        db.categoryList[index][1] = newCategoryColor;
         _categoryNameController.clear();
         _categoryColorController.clear();
       });
-      Navigator.of(context).pop;
       db.updateDataBase();
-      // categoryEditedSnackBar(context);
-    } else if (newColor.isNotEmpty) {
-      // showEmptyCategoryNameDialog(context);
+      categoryEditedSnackBar(context);
     } else {
-      // showEmptyCategoryColorDialog(context);
+      showEmptyCategoryNameDialog(context);
     }
   }
 
@@ -136,112 +179,31 @@ class _SettingsPageState extends State<SettingsPage> {
       db.categoryList.removeAt(index);
     });
     db.updateDataBase();
-    // todo categoryDeletedSnackBar(context);
+    categoryDeletedSnackBar(context);
   }
 
-  // ! rebuild whole page?
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: ListView.builder(
-        itemCount: db.categoryList.length,
-        itemBuilder: (context, index) {
-          //todo last tile bottom padding?
-          return CategoryTileLong(
-            categoryName: db.categoryList[index][0],
-            categoryColor: db.categoryList[index][1],
-            editFunction: (context) => editCategory(index),
-            deleteFunction: (context) => deleteCategory(index),
-          );
-        }
-      ),
+          itemCount: db.categoryList.length,
+          itemBuilder: (context, index) {
+            bool isLastTile = index == db.categoryList.length - 1;
+            bool isFirstTile = index == 0;
+            return Padding(
+              padding: EdgeInsets.only(top: isFirstTile ? 32.0 :0, bottom: isLastTile ? 64.0 : 0.0),
+              child: CategoryTileLong(
+                categoryName: db.categoryList[index][0],
+                categoryColor: db.categoryList[index][1],
+                editFunction: (context) => editCategory(index),
+                deleteFunction: (context) => deleteCategory(index),
+              ),
+            );
+          }),
       floatingActionButton: FloatingActionButton(
-        onPressed: createNewCategory, 
+        onPressed: createNewCategory,
         child: const Icon(Icons.add),
       ),
     );
   }
 }
-
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Column(children: [
-//         Expanded(
-//             child: Column(
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             const Padding(
-//               padding: EdgeInsets.only(left: 20, top: 20, bottom: 10),
-//               child: Text(
-//                 "Profile",
-//                 textAlign: TextAlign.left,
-//                 style: TextStyle(fontSize: 20),
-//               ),
-//             ),
-//             const Divider(
-//               color: Colors.grey,
-//               indent: 20,
-//               endIndent: 20,
-//             ),
-//             GestureDetector(
-//                 onTap: () {
-//                   showDialog(
-//                       context: context,
-//                       builder: (context) {
-//                         return CategoryDialogBox(
-//                           categoryList: db.categoryList,
-//                           onCategorySelected: (selectedCategory) {
-//                             null;
-//                           },
-//                         );
-//                       });
-//                 },
-//                 child: const Padding(
-//                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-//                     child: Row(
-//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                         children: [
-//                           Text(
-//                             "Categories",
-//                             textAlign: TextAlign.left,
-//                             style: TextStyle(fontSize: 15),
-//                           ),
-//                           Icon(Icons.chevron_right)
-//                         ]))),
-//             GestureDetector(
-//                 onTap: () {
-//                   null;
-//                 },
-//                 child: const Padding(
-//                     padding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-//                     child: Row(
-//                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                         children: [
-//                           Text(
-//                             "Completed tasks",
-//                             textAlign: TextAlign.left,
-//                             style: TextStyle(fontSize: 15),
-//                           ),
-//                           Icon(Icons.chevron_right)
-//                         ]))),
-//             const Padding(
-//               padding: EdgeInsets.only(left: 20, top: 20, bottom: 10),
-//               child: Text(
-//                 "Data",
-//                 textAlign: TextAlign.left,
-//                 style: TextStyle(fontSize: 20),
-//               ),
-//             ),
-//             const Divider(
-//               color: Colors.grey,
-//               indent: 20,
-//               endIndent: 20,
-//             ),
-//           ],
-//         ))
-//       ]),
-//     );
-//   }
-// }

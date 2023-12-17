@@ -28,7 +28,7 @@ void main() async {
   Hive.registerAdapter(DurationAdapter());
   await Hive.initFlutter();
 
-  var box = await Hive.openBox('mybox');
+  await Hive.openBox('mybox');
 
   runApp(const MyApp());
 }
