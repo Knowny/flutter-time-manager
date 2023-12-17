@@ -105,6 +105,24 @@ class _CalendarPageState extends State<CalendarPage> {
     _controller.clear();
     Navigator.of(context).pop();
   }
+
+  Widget _buildMarkers(DateTime date, List<dynamic> activities) {
+    if (activities.isNotEmpty) {
+      return Positioned(
+        top: 1,
+        child: Container(
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: getActivityColor(activities),
+          ),
+          width: 5,
+          height: 5,
+        ),
+      );
+    } else {
+      return const SizedBox.shrink(); // Return an empty SizedBox if there are no activities
+    }
+  }
   
   @override
   Widget build(BuildContext context) {
@@ -135,6 +153,14 @@ class _CalendarPageState extends State<CalendarPage> {
                       weekendTextStyle: TextStyle(color: Colors.orangeAccent),
                       outsideTextStyle: TextStyle(color: Colors.grey),
                     ),
+                    eventLoader: (day) {
+                      return db.getActivitiesByDay(day);
+                    },
+                    calendarBuilders: CalendarBuilders(
+                      markerBuilder: (context, date, events) {
+                        return _buildMarkers(date, events);
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -160,6 +186,23 @@ class _CalendarPageState extends State<CalendarPage> {
           : null,
     );
   }
+
+Color getActivityColor(List<dynamic> activities) {
+  Map<String, int> categoryCount = {};
+
+  for (var activity in activities) {
+    if (activity.length > 1) {
+      String category = activity[1].toString();
+      categoryCount[category] = (categoryCount[category] ?? 0) + 1;
+    }
+  }
+
+  String mostRepresentedCategory = categoryCount.keys.reduce((a, b) =>
+      categoryCount[a]! > categoryCount[b]! ? a : b);
+
+  return db.getCategoryColor(mostRepresentedCategory);
+}
+
 
   // activity created notify
   void _activityAddedSnackBar(BuildContext context) {
