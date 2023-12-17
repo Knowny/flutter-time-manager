@@ -29,7 +29,7 @@ class ActivitiesList extends StatelessWidget {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(),
+                  border: Border.all(color: Theme.of(context).cardColor, width: 3),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(

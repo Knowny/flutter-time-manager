@@ -31,10 +31,10 @@ class _PieChartDetailsState extends State<PieChartDetails> {
         itemCount: (widget.categoryName == "") ? widget.db.categoryList.length : activities.length,
         itemBuilder: (context, index) {
           return Padding(
-            padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 5.0),
+            padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0),
               child: Container(
                 decoration: BoxDecoration(
-                  border: Border.all(),
+                  border: Border.all(color: Theme.of(context).cardColor, width: 3),
                   borderRadius: BorderRadius.circular(10),
                 ), 
                 child: (widget.categoryName == "") 
