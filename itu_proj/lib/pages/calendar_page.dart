@@ -70,7 +70,7 @@ class _CalendarPageState extends State<CalendarPage> {
     Navigator.of(context).pop();
   }
 
-  void editActivity(String name) {
+  void editActivity(int index) {
     Future dialogResult = showDialog(
       context: context,
       builder: (context) {
@@ -80,7 +80,7 @@ class _CalendarPageState extends State<CalendarPage> {
           selectedDay: selectedDay,
           saveActivity: putActivityToDatabase,
           deleteActivity: deleteActivityFromDatabase,
-          activity: db.getActivity(name),
+          activity: db.getActivityByIndex(index),
         );
 
       },

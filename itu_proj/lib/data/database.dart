@@ -165,6 +165,21 @@ class ToDoDatabase {
     return [];
   }
 
+  List<dynamic> getActivityByIndex(int index){
+    return activityList[index];
+    
+  }
+
+  bool activityExists(String name){
+    for (var activity in activityList) {
+      if (activity[0] == name) {
+        return true;
+      }
+    }
+    return false;
+  }
+  
+
   Color getCategoryColor(String key) {
     for (var category in categoryList) {
       if (category[0] == key) {

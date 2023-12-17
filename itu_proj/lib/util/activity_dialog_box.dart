@@ -55,7 +55,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   Widget build(BuildContext context) {
     if (widget.activity.isNotEmpty){
       widget.controller.text = widget.activity[0];
-    } else if (db.getActivity(widget.controller.text).isNotEmpty){
+    } else if (db.activityExists(widget.controller.text)){
       widget.controller.clear();
     }
     return AlertDialog(
