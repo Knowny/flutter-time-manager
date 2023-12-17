@@ -50,6 +50,7 @@ class MyApp extends StatelessWidget {
       ),
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
+        initialIndex: 1,
         length: 5,
         child: Scaffold(
           appBar: AppBar(
