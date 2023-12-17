@@ -1,4 +1,7 @@
-/// author(s): xmager00
+///---------------------------
+/// file: category_dialogs.dart
+/// author: xmager00
+///---------------------------
 import 'package:flutter/material.dart';
 
 // category added

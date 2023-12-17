@@ -1,3 +1,8 @@
+///---------------------------
+/// file: category_tile.dart
+/// author: xmager00
+///---------------------------
+
 import 'package:flutter/material.dart';
 
 class CategoryTile extends StatelessWidget {

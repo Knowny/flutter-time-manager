@@ -1,3 +1,8 @@
+///---------------------------
+/// file: category_pick.dart
+/// author: xmager00
+///---------------------------
+
 import 'package:flutter/material.dart';
 import '../util/category_tile.dart';
 

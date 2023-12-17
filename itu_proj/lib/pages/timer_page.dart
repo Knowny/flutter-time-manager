@@ -1,7 +1,6 @@
 ///---------------------------
 /// file: timer_page.dart
 /// author: xmager00
-/// brief: timer tab
 ///---------------------------
 
 ///--------------------------------------------------------------
@@ -13,7 +12,6 @@ import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/category_pick.dart';
 import 'package:itu_proj/util/timer_buttons.dart';
-//import 'dart:async';
 ///--------------------------------------------------------------
 ///                     CLASS TIMER PAGE
 ///--------------------------------------------------------------
@@ -469,12 +467,12 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
               ) 
             )
           ]
-                    )
-                  ]
-                )
+        )
+      ]
+    )
     ]
     ),
-      )
+    )
     );
   }
 

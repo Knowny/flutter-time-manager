@@ -1,4 +1,9 @@
+///---------------------------
+/// file: timer_buttons.dart
+/// author: xmager00
+///---------------------------
 import 'package:flutter/material.dart';
+
 
 class RestartButton extends StatelessWidget{
   const RestartButton({

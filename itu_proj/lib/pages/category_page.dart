@@ -1,8 +1,11 @@
-// author(s): xhusar11
+///---------------------------
+/// file: category_page.dart
+/// author(s): xmager00, xhusar11
+///---------------------------
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
 import 'package:itu_proj/data/database.dart';
-import 'package:itu_proj/util/category_settings.dart';
+import 'package:itu_proj/util/category_dialog_box.dart';
 import '../util/category_tile_long.dart';
 import 'package:itu_proj/util/category_dialogs.dart';
 
@@ -21,19 +24,9 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   void initState() {
-    // refference the hive box
-    // final _myBox = Hive.box('mybox');
-    // ToDoDatabase db = ToDoDatabase();
-
-    // 1st time ever opening app -> create default data
-    // if (_myBox.get("CATEGORYLIST") == null) {
-    //   db.createInitialData();
-    // } else {
-    //   // data already exists
-    //   db.loadData();
-    // }
-    // ! REWRITE !
+    
     super.initState();
+    //call db
     _initHive();
   }
 

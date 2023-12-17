@@ -1,3 +1,8 @@
+///---------------------------
+/// file: category_tile_long.dart
+/// author: xmager00
+///---------------------------
+
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 

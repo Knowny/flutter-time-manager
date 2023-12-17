@@ -7,7 +7,7 @@ import 'package:itu_proj/pages/todo_page.dart';
 import 'package:itu_proj/pages/timer_page.dart';
 import 'package:itu_proj/pages/stats_page.dart';
 import 'package:itu_proj/pages/calendar_page.dart';
-import 'package:itu_proj/pages/settings_page.dart';
+import 'package:itu_proj/pages/category_page.dart';
 
 
 void main() async {
