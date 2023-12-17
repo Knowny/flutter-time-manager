@@ -5,7 +5,7 @@ import 'package:itu_proj/util/category_tile.dart';
 
 class ActivitiesList extends StatelessWidget {
   final List<dynamic> activities;
-  final void Function(int) editActivity;
+  final void Function(List<dynamic>) editActivity;
   final ToDoDatabase db;
   ActivitiesList(
     {super.key,
@@ -26,7 +26,7 @@ class ActivitiesList extends StatelessWidget {
             padding: const EdgeInsets.only(left: 15.0, right: 15.0, top: 10.0),
               child: GestureDetector(
               onTap: () {
-                editActivity(index);
+                editActivity(activities[index]);
               },
               child: Container(
                 decoration: BoxDecoration(
