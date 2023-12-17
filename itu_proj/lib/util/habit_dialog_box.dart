@@ -82,8 +82,12 @@ class _HabitDialogBoxState extends State<HabitDialogBox> {
         height: 300,
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          // todo fix the text
-          const Text('Habit name:'),
+          const Text(
+            'Habit name:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           // * USER INPUT - HABIT NAME
           TextField(
             controller: widget.habitNameController,
@@ -94,8 +98,12 @@ class _HabitDialogBoxState extends State<HabitDialogBox> {
               hintText: "Add a new Habit",
             ),
           ),
-          // todo fix the text
-          const Text('Habit duration:'),
+          const Text(
+            'Habit duration:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           GestureDetector(
             onTap: () {
               _showTimePicker(context);

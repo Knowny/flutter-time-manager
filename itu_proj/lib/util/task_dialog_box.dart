@@ -27,8 +27,12 @@ class TaskDialogBox extends StatelessWidget {
         height: 200,
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          // todo fix later
-          const Text('Task name:'),
+          const Text(
+            'Task name:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           // * USER INPUT - TASK NAME
           TextField(
             controller: taskNameController,
@@ -45,7 +49,7 @@ class TaskDialogBox extends StatelessWidget {
               // * SAVE BUTTON
               MyButtonPrimary(
                 text: "Save",
-                onPressed: onSave,                
+                onPressed: onSave,
               ),
               const SizedBox(
                 width: 8,
