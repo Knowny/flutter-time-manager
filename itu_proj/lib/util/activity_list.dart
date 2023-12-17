@@ -17,6 +17,7 @@ class ActivitiesList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+        // displaying every activity 
         shrinkWrap: true,
         physics: const AlwaysScrollableScrollPhysics(),
         itemCount: activities.length,
@@ -45,6 +46,7 @@ class ActivitiesList extends StatelessWidget {
   }
     
   String formatDuration(DateTime end, Duration minutes) {
+    // format duration to readable string
     DateTime start = end.subtract(minutes);
     
     String startTimeString = formatTime(start);
@@ -54,6 +56,7 @@ class ActivitiesList extends StatelessWidget {
   }
 
   String formatTime(DateTime time) {
+    // format datetime to readable string
     int hours = time.hour;
     int minutes = time.minute;
     int seconds = time.second;

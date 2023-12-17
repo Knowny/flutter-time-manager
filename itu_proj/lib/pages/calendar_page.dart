@@ -16,11 +16,9 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-// refference the hive box
   final _myBox = Hive.box('mybox');
   ToDoDatabase db = ToDoDatabase();
 
-  //midnight of that day
   DateTime selectedDay = DateTime.now();
 
   final _controller = TextEditingController();
@@ -32,11 +30,9 @@ class _CalendarPageState extends State<CalendarPage> {
 
   @override
   void initState() {
-    // 1st time ever opening app -> create default data
     if (_myBox.get("ACTIVITYLIST") == null) {
       db.createInitialData();
     } else {
-      // data already exists
       db.loadData();
     }
     super.initState();
@@ -107,6 +103,7 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Widget _buildMarkers(DateTime date, List<dynamic> activities) {
+    // building marker if there are activities
     if (activities.isNotEmpty) {
       return Positioned(
         top: 1,
@@ -120,7 +117,7 @@ class _CalendarPageState extends State<CalendarPage> {
         ),
       );
     } else {
-      return const SizedBox.shrink(); // Return an empty SizedBox if there are no activities
+      return const SizedBox.shrink();
     }
   }
   
@@ -136,6 +133,7 @@ class _CalendarPageState extends State<CalendarPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(bottom: 15),
+                // displaying calendar
                 child: SizedBox(
                   height: 290,
                   width: 325,
@@ -164,6 +162,7 @@ class _CalendarPageState extends State<CalendarPage> {
                   ),
                 ),
               ),
+              // displaying activities
               SizedBox(
                 height: 300,
                 child: (activities.isNotEmpty)
@@ -178,7 +177,7 @@ class _CalendarPageState extends State<CalendarPage> {
           ),
         ),
       ),
-      floatingActionButton: (selectedDay.isBefore(DateTime.now())) //.add(const Duration(days: 1))
+      floatingActionButton: (selectedDay.isBefore(DateTime.now()))
           ? FloatingActionButton(
               onPressed: createNewActivity,
               child: const Icon(Icons.add),
@@ -188,6 +187,7 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
 Color getActivityColor(List<dynamic> activities) {
+  // get the color of category with most activities
   Map<String, int> categoryCount = {};
 
   for (var activity in activities) {
@@ -201,8 +201,7 @@ Color getActivityColor(List<dynamic> activities) {
       categoryCount[a]! > categoryCount[b]! ? a : b);
 
   return db.getCategoryColor(mostRepresentedCategory);
-}
-
+  }
 
   // activity created notify
   void _activityAddedSnackBar(BuildContext context) {

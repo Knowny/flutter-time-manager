@@ -42,6 +42,7 @@ Widget build(BuildContext context) {
           ),
           minimumSize: MaterialStateProperty.all(const Size(80, 40)),
         ),
+        // define buttons
         segments: const <ButtonSegment<Selector>>[
           ButtonSegment<Selector>(
             value: Selector.Today,

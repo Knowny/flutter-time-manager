@@ -18,6 +18,7 @@ class _StatsPageState extends State<StatsPage> {
   final _myBox = Hive.box('mybox');
   ToDoDatabase db = ToDoDatabase();
   int touchedIndex = -1;
+
   @override
   void initState() {
     if (_myBox.get("CATEGORYLIST") == null) {
@@ -35,6 +36,7 @@ class _StatsPageState extends State<StatsPage> {
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(0.0, 30.0, 0.0, 0.0),
+            // segmented button
             child: SingleChoice(
               selectorView: selectorView,
               onSelectionChanged: (Selector newSelection) {
@@ -45,6 +47,7 @@ class _StatsPageState extends State<StatsPage> {
             ),
           ),
         Expanded(
+          // pie chart
           child: 
             MyPieChart(
               db: db, 
@@ -56,6 +59,7 @@ class _StatsPageState extends State<StatsPage> {
               },)
         ),
         Padding(
+          //details from pie chart
           padding: const EdgeInsets.only(bottom: 5), 
           child: SizedBox(
             height: 200,
@@ -71,5 +75,4 @@ class _StatsPageState extends State<StatsPage> {
       ),
     ); 
   }
-
 }

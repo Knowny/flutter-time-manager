@@ -26,6 +26,7 @@ class _PieChartDetailsState extends State<PieChartDetails> {
   Widget build(BuildContext context) {
     List<dynamic> activities = widget.db.getThisActivitiesByFilter(widget.filter.name, widget.categoryName);
     return ListView.builder(
+        // displaying all activities
         shrinkWrap: true,
         physics: const AlwaysScrollableScrollPhysics(),
         itemCount: (widget.categoryName == "") ? widget.db.categoryList.length : activities.length,
@@ -53,6 +54,7 @@ class _PieChartDetailsState extends State<PieChartDetails> {
   }
 
   String formatDuration(Duration totalDuration) {
+    // format duration to readable string
     int hours = totalDuration.inHours;
     int minutes = (totalDuration.inMinutes % 60);
     int seconds = (totalDuration.inSeconds % 60);
@@ -65,6 +67,7 @@ class _PieChartDetailsState extends State<PieChartDetails> {
   }
 
   String formatDouble(double minutes) {
+    // take minutes and formati it to duration readable string
     int totalSeconds = (minutes * 60).round();
     int hours = totalSeconds ~/ 3600;
     int minutesPart = (totalSeconds ~/ 60) % 60;

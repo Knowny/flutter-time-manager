@@ -43,11 +43,9 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   ToDoDatabase db = ToDoDatabase();
   @override
   void initState() {
-    // 1st time ever opening app -> create default data
     if (_myBox.get("ACTIVITYLIST") == null) {
       db.createInitialData();
     } else {
-      // data already exists
       db.loadData();
     }
     super.initState();
@@ -124,6 +122,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                   );
                 },
                 child: Column(
+                  // showing category that was picked, or default one
                   children: [
                     CategoryTile(
                         categoryName: 
@@ -148,6 +147,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: GestureDetector(
+                    // time picker
                     onTap: () {
                       showModalBottomSheet(
                         context: context,
@@ -165,6 +165,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                       );
                     },
                     child: Column(
+                      // showing helpful texts
                       children: [
                         const SizedBox(width: 8),
                         Text(
@@ -187,6 +188,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                     borderRadius: BorderRadius.circular(5),
                   ),
                   child: GestureDetector(
+                    // time picker
                     onTap: () {
                       showModalBottomSheet(
                         context: context,
@@ -204,6 +206,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                       );
                     },
                     child: Column(
+                      // showing helpful text
                       children: [
                         Text(
                           endTime != null
@@ -218,7 +221,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
               ),
             ],
           ),
-          //save + cancel button
+          //save/edit + cancel button
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -250,7 +253,12 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     );
   }
 
+  //*          *//
+  //  Functions //
+  //*          *//
+
   DateTime getStartTime(List<dynamic> activity) {
+    // calculate start time from activity
     Duration duration = activity[3];
     DateTime endTime = activity[2];
 
@@ -260,6 +268,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
   
   DateTime durationToDateTime(Duration? duration, DateTime baseDate) {
+    // convert duration to dateTime
     if (duration == null){
       return baseDate;
     }
@@ -268,6 +277,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
   
   Duration dateTimeToDuration(DateTime baseDate){
+    // convert dateTime to duration
     int hours = baseDate.hour;
     int minutes = baseDate.minute;
     int seconds = baseDate.second;
@@ -275,8 +285,8 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     return Duration(hours: hours, minutes: minutes, seconds: seconds);
   }
 
-  // ["ACTIVITY_NAME", "CATEGORY", date(dateTime), timeSpent (seconds)]
   void saveNewActivity() {
+    // check input correctness and create newActivity and call save activity
     DateTime newStart = durationToDateTime(startTime, widget.selectedDay);
     DateTime newEnd = durationToDateTime(endTime, widget.selectedDay);
 
@@ -309,7 +319,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   bool checkFutureTest(DateTime startTime, DateTime endTime){    
-    //? Check the duration start and end so you don't create something in the future
+    // Check the duration start and end so you don't create something in the future
     DateTime now = DateTime.now();
     if (startTime.isAfter(now) || endTime.isAfter(now)) {
       return false;
@@ -318,7 +328,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   bool checkStartEnd(DateTime startTime, DateTime endTime){  
-    //? Check that the start duration isn't later than the end duration or naturally reverse it
+    // Check that the start duration isn't later than the end duration or naturally reverse it
     if (startTime.isAfter(endTime)) {
       return false;
     }
@@ -326,7 +336,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
   
   bool checkName(){    
-    //? Check if the activity name is not empty
+    // Check if the activity name is not empty
     if (widget.controller.text.isEmpty) {
       return false;
     }
@@ -334,6 +344,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   bool checkCategory() {
+    // check if category was picked
     if (!categoryPicked){
       return false;
     }
@@ -348,6 +359,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   bool checkEmptyTimes(){
+    // check if any time was picked
     if (startTime == null || endTime == null) {
       return false;
     }
@@ -355,6 +367,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   Duration calculateDuration(Duration? startTime, Duration? endTime) {
+    // calculate duration from start to end times
     if (startTime == null || endTime == null) {
       return const Duration(hours: 0, minutes: 0, seconds: 0);
     }
@@ -363,6 +376,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   String formatDuration(Duration duration) {
+    // format duration to readable string
     int hours = duration.inHours;
     int minutes = (duration.inMinutes % 60);
     int seconds = (duration.inSeconds % 60);
@@ -375,6 +389,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   String formatDayTime(DateTime time) {
+    // format datetime to readable string
     int hours = time.hour;
     int minutes = time.minute;
     int seconds = time.second;
@@ -511,5 +526,4 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
       },
     );
   }
-
 }

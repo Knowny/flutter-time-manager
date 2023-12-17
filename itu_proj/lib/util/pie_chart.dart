@@ -77,6 +77,7 @@ class _MyPieChartState extends State<MyPieChart> {
     return Stack(
       alignment: Alignment.center,
       children: [
+        //displaying pie chart
         PieChart(
           PieChartData(
             borderData: FlBorderData(
@@ -104,6 +105,7 @@ class _MyPieChartState extends State<MyPieChart> {
             sections: showingSections(spots, colors),
           ),
         ),
+        // displaying text in the middle of pie chart
         Text(
           (touchedIndex == -1 ? "Total time" : widget.db.categoryList[touchedIndex][0]) + "\n" + 
           formatDuration(
@@ -117,6 +119,7 @@ class _MyPieChartState extends State<MyPieChart> {
   }
 
   List<PieChartSectionData> showingSections(List<FlSpot> spots, List<Color> colors) {
+    // show sections of pie chart
     if (spots.every((spot) => spot.y == 0)) {
       return [
         PieChartSectionData(
@@ -142,6 +145,7 @@ class _MyPieChartState extends State<MyPieChart> {
   }
 
   String formatDuration(double minutes) {
+    // format duration to readable string
     int totalSeconds = (minutes * 60).round();
     int hours = totalSeconds ~/ 3600;
     int minutesPart = (totalSeconds ~/ 60) % 60;
