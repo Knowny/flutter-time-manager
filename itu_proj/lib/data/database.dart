@@ -30,7 +30,7 @@ class ToDoDatabase {
       ["Pass the ITU", false, false],
     ];
 
-    // habitName, isCompleted, isHabitActive, timeSpent (sec), timeDuration (min), isFavourite, category
+    // habitName, isCompleted, isActive, timeSpent (sec), timeDuration (min), isFavourite, category
     habitList = [
       ["Test the timer", false, false, 0, 1 * 60, false],
       ["Test the 2nd timer", false, false, 0, 2 * 60, false],
