@@ -96,20 +96,23 @@ class _SettingsPageState extends State<SettingsPage> {
     String newCategoryName = _categoryNameController.text;
     String colorString = _categoryColorController.text;
 
-    Color newCategoryColor;
+    // Color newCategoryColor;
+
+    String newColorString;
 
     if (colorString.isNotEmpty) {
-      newCategoryColor =
-          Color(int.parse(colorString.replaceFirst('#', '0xFF')));
+      newColorString = colorString;
+          // Color(int.parse(colorString.replaceFirst('#', '0xFF')));
     } else {
-      newCategoryColor = const Color(0xfff44336);
+      newColorString = "#f44336"; //red color
+      // newCategoryColor = const Color(0xfff44336);
     }
 
-    newCategoryColor = getMaterialColor(newCategoryColor);
+    // newCategoryColor = getMaterialColor(newCategoryColor);
 
     if (newCategoryName.isNotEmpty) {
       setState(() {
-        db.categoryList.add([newCategoryName, newCategoryColor]);
+        db.categoryList.add([newCategoryName, newColorString]);
         _categoryNameController.clear();
         _categoryColorController.clear();
       });
@@ -126,10 +129,9 @@ class _SettingsPageState extends State<SettingsPage> {
     String currentCategoryName = db.categoryList[index][0];
     _categoryNameController.text = currentCategoryName;
 
-    Color currentCategoryColor = db.categoryList[index][1];
-    String currentCategoryColorString =
-        currentCategoryColor.value.toRadixString(16).substring(2);
-    _categoryColorController.text = '#$currentCategoryColorString';
+    // Color currentCategoryColor = db.categoryList[index][1];
+    String currentCategoryColorString = db.categoryList[index][1];
+    _categoryColorController.text = currentCategoryColorString;
 
     showDialog(
         context: context,
@@ -157,12 +159,12 @@ class _SettingsPageState extends State<SettingsPage> {
       // if (newName.isNotEmpty && colorString.isNotEmpty) {
       setState(() {
         db.categoryList[index][0] = newName;
+        
+        // Color newCategoryColor =
+        //     Color(int.parse(colorString.replaceFirst('#', '0xFF')));
+        // newCategoryColor = getMaterialColor(newCategoryColor);
 
-        Color newCategoryColor =
-            Color(int.parse(colorString.replaceFirst('#', '0xFF')));
-        newCategoryColor = getMaterialColor(newCategoryColor);
-
-        db.categoryList[index][1] = newCategoryColor;
+        db.categoryList[index][1] = colorString;
         _categoryNameController.clear();
         _categoryColorController.clear();
       });
@@ -194,7 +196,7 @@ class _SettingsPageState extends State<SettingsPage> {
               padding: EdgeInsets.only(top: isFirstTile ? 32.0 :0, bottom: isLastTile ? 64.0 : 0.0),
               child: CategoryTileLong(
                 categoryName: db.categoryList[index][0],
-                categoryColor: db.categoryList[index][1],
+                categoryColor: db.getCategoryColor(db.categoryList[index][0]),
                 editFunction: (context) => editCategory(index),
                 deleteFunction: (context) => deleteCategory(index),
               ),

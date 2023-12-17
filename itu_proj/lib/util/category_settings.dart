@@ -7,17 +7,14 @@ class CategoryDialogBox extends StatefulWidget {
   final categoryColorController;
   VoidCallback onSave;
   VoidCallback onCancel;
-  // VoidCallback onColorChange;
 
-  CategoryDialogBox(
-      {Key? key, // Added Key parameter
-      required this.categoryNameController,
-      required this.categoryColorController,
-      required this.onSave,
-      required this.onCancel,
-      // required this.onColorChange
-      })
-      : super(key: key); // Use super(key: key)
+  CategoryDialogBox({
+    Key? key,
+    required this.categoryNameController,
+    required this.categoryColorController,
+    required this.onSave,
+    required this.onCancel,
+  }) : super(key: key);
 
   @override
   _CategoryDialogBoxState createState() => _CategoryDialogBoxState();
@@ -26,6 +23,32 @@ class CategoryDialogBox extends StatefulWidget {
 class _CategoryDialogBoxState extends State<CategoryDialogBox> {
   // variable to store the selected color
   Color selectedColor = Colors.red;
+
+  MaterialColor getColorFromHex(String hexColor) {
+    if (hexColor.isEmpty) return Colors.red;
+
+    if (hexColor[0] == '#') {
+      hexColor = hexColor.substring(1);
+    }
+
+    int parsedColor = int.parse(hexColor, radix: 16);
+
+    Color color = Color(parsedColor);
+
+    // Create MaterialColor from Color object
+    return MaterialColor(color.value, {
+      50: color.withOpacity(0.1),
+      100: color.withOpacity(0.2),
+      200: color.withOpacity(0.3),
+      300: color.withOpacity(0.4),
+      400: color.withOpacity(0.5),
+      500: color.withOpacity(0.6),
+      600: color.withOpacity(0.7),
+      700: color.withOpacity(0.8),
+      800: color.withOpacity(0.9),
+      900: color.withOpacity(1.0),
+    });
+  }
 
   // show color picker
   void _showColorPicker(BuildContext context) {
@@ -41,11 +64,14 @@ class _CategoryDialogBoxState extends State<CategoryDialogBox> {
               onColorChange: (Color color) {
                 setState(() {
                   selectedColor = color;
-                  String colorString = color.value.toRadixString(16).substring(2);
+                  String colorString =
+                      color.value.toRadixString(16).substring(2);
                   widget.categoryColorController.text = '#$colorString';
                 });
               },
-              selectedColor: Colors.red,
+              selectedColor: (widget.categoryColorController.text.isNotEmpty)
+                  ? getColorFromHex(widget.categoryColorController.text)
+                  : Colors.red,
             ),
           ),
           actions: <Widget>[
@@ -72,7 +98,7 @@ class _CategoryDialogBoxState extends State<CategoryDialogBox> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             TextField(
-              controller: widget.categoryNameController, // Use widget. prefix
+              controller: widget.categoryNameController,
               decoration: const InputDecoration(
                 enabledBorder: OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -98,14 +124,14 @@ class _CategoryDialogBoxState extends State<CategoryDialogBox> {
               children: [
                 MyButtonPrimary(
                   text: 'Save',
-                  onPressed: widget.onSave, // Use widget. prefix
+                  onPressed: widget.onSave,
                 ),
                 const SizedBox(
                   width: 8,
                 ),
                 MyButtonSecondary(
                   text: 'Cancel',
-                  onPressed: widget.onCancel, // Use widget. prefix
+                  onPressed: widget.onCancel,
                 ),
               ],
             )

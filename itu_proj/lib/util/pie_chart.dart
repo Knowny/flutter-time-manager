@@ -37,7 +37,7 @@ class _MyPieChartState extends State<MyPieChart> {
     colors = [];
     if (widget.selectorView == Selector.Today) {
       for (var index = 0; index < widget.db.categoryList.length; index++) {
-        Color categoryColor = widget.db.categoryList[index][1];
+        Color categoryColor = widget.db.getCategoryColor(widget.db.categoryList[index][0]);
         double categoryTime = widget.db.getTodayTotal(widget.db.categoryList[index][0]);
 
         spots.add(FlSpot(index.toDouble(), categoryTime));
@@ -45,7 +45,7 @@ class _MyPieChartState extends State<MyPieChart> {
       }
     } else if (widget.selectorView == Selector.Week) {
       for (var index = 0; index < widget.db.categoryList.length; index++) {
-        Color categoryColor = widget.db.categoryList[index][1];
+        Color categoryColor = widget.db.getCategoryColor(widget.db.categoryList[index][0]);
         double categoryTime = widget.db.getThisWeekTotal(widget.db.categoryList[index][0]);
 
         spots.add(FlSpot(index.toDouble(), categoryTime));
@@ -53,7 +53,7 @@ class _MyPieChartState extends State<MyPieChart> {
       }
     } else if (widget.selectorView == Selector.Month) {
       for (var index = 0; index < widget.db.categoryList.length; index++) {
-        Color categoryColor = widget.db.categoryList[index][1];
+        Color categoryColor = widget.db.getCategoryColor(widget.db.categoryList[index][0]);
         double categoryTime = widget.db.getThisMonthTotal(widget.db.categoryList[index][0]);
 
         spots.add(FlSpot(index.toDouble(), categoryTime));
@@ -62,7 +62,7 @@ class _MyPieChartState extends State<MyPieChart> {
     } else {
       // ALL
       for (var index = 0; index < widget.db.categoryList.length; index++) {
-        Color categoryColor = widget.db.categoryList[index][1];
+        Color categoryColor = widget.db.getCategoryColor(widget.db.categoryList[index][0]);
         double categoryTime = widget.db.getCategoryTime(widget.db.categoryList[index][0]);
 
         spots.add(FlSpot(index.toDouble(), categoryTime));
