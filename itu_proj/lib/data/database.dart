@@ -138,10 +138,11 @@ class ToDoDatabase {
 
     categoryList = [
       // ["NAME","COLOR"]
-      ["School", "#FF0000"],
-      ["Sport", "#0000FF"],
-      ["Free Time", "#FFFF00"],
-      ["Socialising", "#FFA500"],
+      ["School", "#f44336"],
+      ["Sport", "#4fc3f7"],
+      ["Free Time", "#fbc02d"],
+      ["Socialising", "#7cb342"],
+      ["Other", "#cfd8dc"],
     ];
   }
 
