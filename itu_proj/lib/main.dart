@@ -28,7 +28,7 @@ void main() async {
   Hive.registerAdapter(DurationAdapter());
   await Hive.initFlutter();
 
-  var box = await Hive.openBox('mybox');
+  await Hive.openBox('mybox');
 
   runApp(const MyApp());
 }
@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
                 Tab(icon: Icon(Icons.timer)),
                 Tab(icon: Icon(Icons.bar_chart)),
                 Tab(icon: Icon(Icons.calendar_month)),
-                Tab(icon: Icon(Icons.settings)),
+                Tab(icon: Icon(Icons.category)),
               ],
             ),
             toolbarHeight: 0,

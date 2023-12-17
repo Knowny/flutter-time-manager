@@ -36,6 +36,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
   ///                     VARIABLES
   ///--------------------------------------------------------------
   late AnimationController controller;
+  final activityNameController = TextEditingController();
 
   int minutes = 0;
   String categoryPickedName = "";
@@ -68,7 +69,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
   @override
   void initState() {
     // 1st time ever opening app -> create default data
-    if (_myBox.get("ACTIVITYLIST") == null) {
+    if (_myBox.get("CATEGORYLIST") == null) {
       db.createInitialData();
     } else {
       // data already exists
@@ -121,15 +122,16 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
 
   void activityCreate(){
     final snackBar = SnackBar(
-      content: Text('$categoryPickedName for $lastTimer saved ', 
+      content: Text('$categoryPickedName saved ', 
         style: TextStyle(color: Colors.grey.shade900.withOpacity(1.0)),
       ),
       backgroundColor: Colors.grey.withOpacity(0.8),
     );
 
     if(categoryPickedName != "" && lastTimer != Duration.zero){
-      // db.activityList.add(["Unnamed activity", categoryPickedName, DateTime.now(), lastTimer]);
-      // db.updateDataBase();
+      activityName = activityNameController.text == "" ? "$categoryPickedName activity" : activityNameController.text;
+      db.activityList.add([activityName, categoryPickedName, DateTime.now(), lastTimer]);
+      db.updateDataBase();
       setState(() {
         activitySaved = true;
       });
@@ -147,15 +149,19 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
     super.build(context);
     return Scaffold(
       backgroundColor: Colors.grey[850],
-      body:  Column(
+      body: SingleChildScrollView(
+        child: Column(
         children: [
-          Expanded(
-            child: Column(
-              children: [
-                //--------------------------------------------------------------
-                //                  TIMER MODE PICKER
-                //--------------------------------------------------------------
-                 Row(
+          Column(
+            children: [
+              //--------------------------------------------------------------
+              //                  TIMER MODE PICKER
+              //--------------------------------------------------------------
+              Padding( 
+                padding: EdgeInsets.only(top: 25),
+                child:
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     GestureDetector(
                       onTap: () {
@@ -166,7 +172,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
                             ),
                             backgroundColor: Colors.grey.withOpacity(0.8),
                           );
-
+          
                           ScaffoldMessenger.of(context).showSnackBar(
                             snackBar
                           );
@@ -179,21 +185,20 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
                         }
                       },
                       child: RoundButtonLeft(
-                        size: 40,
+                        size: 35,
                         clicked: isIncremental,
                         icon: Icons.timer),
                     ),
-                    GestureDetector(
-                      
+                    GestureDetector(              
                       onTap: () {
                         if(controller.isAnimating || isPaused){
-                           final snackBar = SnackBar(
+                          final snackBar = SnackBar(
                             content: Text('Timer mode cannot be changed while activity is in progress', 
                               style: TextStyle(color: Colors.grey.shade900.withOpacity(1.0)),
                             ),
                             backgroundColor: Colors.grey.withOpacity(0.8),
                           );
-
+          
                           ScaffoldMessenger.of(context).showSnackBar(
                             snackBar
                           );
@@ -205,7 +210,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
                         }
                       },
                       child: RoundButtonRight(
-                        size: 40,
+                        size: 35,
                         clicked: !isIncremental,
                         icon: Icons.timelapse
                       ),
@@ -213,213 +218,262 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
                   ],
                   
                 ),
-                const Text(
-                  'Last activity'
-                ),
-                Text(
-                  //isIncremental || lastTimer == Duration.zero ? categoryPickedName : '$categoryPickedName for ${(lastTimer.inSeconds).toString()} seconds'
-                  '$isIncremental'
-                ),
-              //--------------------------------------------------------------
-              //                     TIMER CIRCLE
-              //--------------------------------------------------------------
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: CircularProgressIndicator(
-                      backgroundColor: Colors.grey[800],
-                      value: progress,
-                      strokeWidth: 5,
-                      
+              ),
+              Padding( //text and input field
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 50),
+                child: Column(
+                  children: [
+                    Visibility(
+                      visible: (controller.isDismissed && !isPaused) || (categoryPickedName != "" && lastTimer != Duration.zero) ,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Text(
+                            textAlign: TextAlign.left,
+                            categoryPickedName == "" ? "" : "Last activity",
+                            style: const TextStyle(
+                              color: Colors.grey,
+                            )
+                          ),
+                          Text(
+                            isIncremental ? categoryPickedName : lastTimer == Duration.zero ? categoryPickedName : '$categoryPickedName for ${lastTimer.inHours}:${(lastTimer.inMinutes % 60).toString().padLeft(2, '0')}:${(lastTimer.inSeconds % 60).toString().padLeft(2, '0')}',
+                            textAlign: TextAlign.left,
+                            style: const TextStyle(
+                              fontSize: 20
+                            )
+                          )
+                        ]
+                      )
                     ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      //prevents user from picking time while timer is running
-                      if (controller.isDismissed && !isIncremental){
-                        showModalBottomSheet(
-                          context: context, 
-                          builder: (context) => SizedBox(
-                            height: 300,
-                            child: CupertinoTimerPicker(
-                              //initialTimerDuration: controller.duration!,
-                              onTimerDurationChanged: (time) {
-                                setState(() {
-                                  controller.duration = time;
-                                });
-                              },
-                            ),
-                          ),);
-                      }
-                    },
-                    child: AnimatedBuilder(
-                      animation: controller, 
-                      builder: (context, child) => Text(
-                        //from String get countText
-                        countText,
-                        style: const TextStyle(
-                          fontSize: 60,
+                    Visibility(
+                      visible: categoryPicked && (controller.isAnimating || isPaused ),
+                      child: TextField(
+                        controller: activityNameController,
+                        enabled: true,
+                        decoration: InputDecoration(
+                          enabledBorder: const OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.grey)),
+                          border: const OutlineInputBorder(),
+                          hintText: activityName == "" ? "$categoryPickedName activity" : activityName,
                         ),
+                      )
+                    )
+                  ],
+                )
+              ),
+              
+            //--------------------------------------------------------------
+            //                     TIMER CIRCLE
+            //--------------------------------------------------------------
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                SizedBox(
+                  width: 260,
+                  height: 260,
+                  child: CircularProgressIndicator(
+                    backgroundColor: Colors.grey[800],
+                    value: progress,
+                    strokeWidth: 5,
+                    
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    //prevents user from picking time while timer is running
+                    if (controller.isDismissed && !isIncremental){
+                      showModalBottomSheet(
+                        context: context, 
+                        builder: (context) => SizedBox(
+                          height: 260,
+                          child: CupertinoTimerPicker(
+                            //initialTimerDuration: controller.duration!,
+                            onTimerDurationChanged: (time) {
+                              setState(() {
+                                controller.duration = time;
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: AnimatedBuilder(
+                    animation: controller, 
+                    builder: (context, child) => Text(
+                      //from String get countText
+                      countText,
+                      style: const TextStyle(
+                        fontSize: 60,
                       ),
                     ),
                   ),
-                ],
-            ),
+                ),
               ],
             ),
-            
-          ),
+          
+                    
           //--------------------------------------------------------------
           //                     BUTTONS
           //--------------------------------------------------------------
           Column(
             children: [
-              Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                //--------------------------------------------------------------
-                //                    PLAY/PAUSE
-                //--------------------------------------------------------------
-                GestureDetector(
-                  onTap: () {
-                    if(!isIncremental && controller.duration == Duration.zero){ //decrementing from 0
-                      showDialog(
-                        context: context, 
-                        builder: (context){
-                        return AlertDialog(
-                            content: const Text("Timer has to be set to a non zero value in this mode"),
-                            actions: [ TextButton(
-                              child: const Text("OK"),
-                                onPressed:  () {
-                                  Navigator.pop(context);
-                                }
-                              )
-                            ],
-                          );
-                        }
-                      );
-                    }else{
-                      if(!categoryPicked && controller.isDismissed){ //category pick dialog
-                      showDialog(
-                        context: context,
-                        builder: (context) {
-                          return CategoryBox(
-                            categoryList: db.categoryList,
-                            onCategorySelected: (selectedCategory) {
-                            // Handle the selected category in your main page
-                              setState(() {
-                                categoryPickedName = selectedCategory;
-                                categoryPicked = true;
-                              });
-                              if (isIncremental){ //start timer after category is picked
-                                setState(() {
-                                  controller.value = 0;
-                                  controller.duration = const Duration(seconds: 60);
-                                });
-                                controller.forward();
-                              }else{
-                                controller.reverse(from: controller.value == 0 ? 1.0 : controller.value);
-                              }
-                              setState(() {
-                                isRunning = true;
-                              });
-                            },
-                          );
-                        },//builder
-                      );//end of category dialog
-                    }//if-else   
-                    
-                    
-                    if (controller.isAnimating){ //pause
-                      controller.stop();
-                      setState(() {
-                        isRunning = false;
-                        isPaused = true;
-                      });
-                    }else{
-                      if (categoryPicked && !isIncremental){ //resume decrement
-                        controller.reverse(from: controller.value == 0 ? 1.0 : controller.value);
-                      }else if (categoryPicked && isIncremental){ //resume increment
-                        controller.forward(from: controller.value);
-                      }
-                      setState(() {
-                        isRunning = true;
-                        isPaused = false;
-                      });
-                    } //if-else 
-                  
-                    }//if
-                  }, //onTap
-                  
-                  child: RoundButtonLeft(
-                    size: 50,
-                    clicked: (isPaused || controller.isDismissed || controller.isAnimating),
-                    icon: isRunning ? Icons.pause : Icons.play_arrow,
-                    )
-                ),
-                //--------------------------------------------------------------
-                //                     STOP
-                //--------------------------------------------------------------
-                GestureDetector(
-                  onTap:() {
-                    controller.reset();
-                    setState(() {
-                      isRunning = false;
-                      isPaused = false;
-                      categoryPicked = false;
-                      activityCreate();
-                    });
-                  },
-                  child: RoundButtonRight(
-                    size: 50,
-                    clicked: (controller.isAnimating || isPaused),
-                    icon: Icons.stop
-                  ),
-                ),
-              ]  
               
-            ),
+              Padding(
+                padding: EdgeInsets.only(top: 30),                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    //--------------------------------------------------------------
+                    //                    PLAY/PAUSE
+                    //--------------------------------------------------------------
+                    GestureDetector(
+                      onTap: () {
+                        if(!isIncremental && controller.duration == Duration.zero){ //decrementing from 0
+                          showDialog(
+                            context: context, 
+                            builder: (context){
+                            return AlertDialog(
+                                content: const Text("Timer has to be set to a non zero value in this mode"),
+                                actions: [ TextButton(
+                                  child: const Text("OK"),
+                                    onPressed:  () {
+                                      Navigator.pop(context);
+                                    }
+                                  )
+                                ],
+                              );
+                            }
+                          );
+                        }else{
+                          if(!categoryPicked && controller.isDismissed){ //category pick dialog
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return CategoryBox(
+                                categoryList: db.categoryList,
+                                onCategorySelected: (selectedCategory) {
+                                  setState(() {
+                                    categoryPickedName = selectedCategory;
+                                    categoryPicked = true;
+                                  });
+                                  if (isIncremental){ //start timer after category is picked
+                                    setState(() {
+                                      controller.value = 0;
+                                      controller.duration = const Duration(seconds: 60);
+                                    });
+                                    controller.forward();
+                                  }else{
+                                    controller.reverse(from: controller.value == 0 ? 1.0 : controller.value);
+                                  }
+                                  setState(() {
+                                    isRunning = true;
+                                    lastTimer = Duration.zero;
+                                  });
+                                },
+                              );
+                            },//builder
+                          );//end of category dialog
+                        }//if-else   
+                        
+                        
+                        if (controller.isAnimating){ //pause
+                          controller.stop();
+                          setState(() {
+                            isRunning = false;
+                            isPaused = true;
+                          });
+                        }else{
+                          if (categoryPicked && !isIncremental){ //resume decrement
+                            controller.reverse(from: controller.value == 0 ? 1.0 : controller.value);
+                          }else if (categoryPicked && isIncremental){ //resume increment
+                            controller.forward(from: controller.value);
+                          }
+                          setState(() {
+                            isRunning = true;
+                            isPaused = false;
+                          });
+                        } //if-else 
+                      
+                        }//if
+                      }, //onTap
+                      
+                      child: RoundButtonLeft(
+                        size: 50,
+                        clicked: (isPaused || controller.isDismissed || controller.isAnimating),
+                        icon: isRunning ? Icons.pause : Icons.play_arrow,
+                        )
+                    ),
+                    //--------------------------------------------------------------
+                    //                     STOP
+                    //--------------------------------------------------------------
+                    GestureDetector(
+                      onTap:() {
+                        controller.reset();
+                        setState(() {
+                          isRunning = false;
+                          isPaused = false;
+                          categoryPicked = false;
+                          activityCreate();
+                        });
+                      },
+                      child: RoundButtonRight(
+                        size: 50,
+                        clicked: (controller.isAnimating || isPaused),
+                        icon: Icons.stop
+                      ),
+                    ),
+                  ]  
+                ),
+              ),
+            
             //--------------------------------------------------------------
             //                     RESET
             //--------------------------------------------------------------
-            Visibility(
-              visible: (controller.isDismissed && !isPaused),
-              child:GestureDetector(
-                onTap: () {
-                  setState(() {
-                    minutes = 0;
-                  });
-                  if(categoryPickedName != "" && lastTimer != Duration.zero){
-                      if (controller.isDismissed && !isIncremental){
-                      controller.duration = lastTimer;
-                      controller.reverse(
-                        from: 1.0
-                      );
-                      setState(() {
-                        categoryPicked = true;
-                        isRunning = true;
-                      });
-                    }else if (controller.isDismissed && isIncremental){
-                      controller.duration = const Duration(seconds: 60);
-                      controller.forward();
-                      setState(() {
-                        categoryPicked = true;
-                        isRunning = true;
-                      });
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 30),
+              child: 
+              
+              Visibility( 
+                visible: (controller.isDismissed && !isPaused),
+                child: GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      minutes = 0;
+                    });
+                    if(categoryPickedName != "" && lastTimer != Duration.zero){
+                        if (controller.isDismissed && !isIncremental){
+                        controller.duration = lastTimer;
+                        controller.reverse(
+                          from: 1.0
+                        );
+                        setState(() {
+                          categoryPicked = true;
+                          isRunning = true;
+                        });
+                      }else if (controller.isDismissed && isIncremental){
+                        controller.duration = const Duration(seconds: 60);
+                        controller.forward();
+                        setState(() {
+                          categoryPicked = true;
+                          isRunning = true;
+                        });
+                      }
                     }
-                  }
-                  
-                },
-                child: const RestartButton(text: "Restart last activity"),
+                  },
+                  child: RestartButton(
+                    clicked: (categoryPickedName != "" && lastTimer != Duration.zero),
+                    text: "Restart last activity"
+                  ),
+                ),
               ) 
             )
-            
-            ]
-          )
-        ],
+          ]
+                    )
+                  ]
+                )
+    ]
+    ),
       )
     );
   }
