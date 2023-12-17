@@ -55,14 +55,17 @@ class _StatsPageState extends State<StatsPage> {
                 });
               },)
         ),
-        SizedBox(
-          height: 200,
-          child: PieChartDetails(
-            key: ValueKey<int>(touchedIndex),
-            filter: selectorView,
-            db: db,
-            categoryName: (touchedIndex == -1 ? "" : db.categoryList[touchedIndex][0]),
-          ),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 5), 
+          child: SizedBox(
+            height: 200,
+              child: PieChartDetails(
+                key: ValueKey<int>(touchedIndex),
+                filter: selectorView,
+                db: db,
+                categoryName: (touchedIndex == -1 ? "" : db.categoryList[touchedIndex][0]),
+              ),
+            )
           )
         ]
       ),

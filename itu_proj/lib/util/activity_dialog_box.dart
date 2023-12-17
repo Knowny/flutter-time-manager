@@ -145,6 +145,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: const Color.fromARGB(255, 96, 96, 96)),
+                    borderRadius: BorderRadius.circular(5),
                   ),
                   child: GestureDetector(
                     onTap: () {
@@ -153,6 +154,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                         builder: (context) => SizedBox(
                           height: 300,
                           child: CupertinoTimerPicker(
+                            initialTimerDuration: (widget.activity.isNotEmpty) ? dateTimeToDuration(getStartTime(widget.activity)) : Duration.zero,
                             onTimerDurationChanged: (newTime) {
                               setState(() {
                                 startTime = newTime;
@@ -182,7 +184,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                 child: Container(
                   decoration: BoxDecoration(
                     border: Border.all(color: const Color.fromARGB(255, 96, 96, 96)),
-
+                    borderRadius: BorderRadius.circular(5),
                   ),
                   child: GestureDetector(
                     onTap: () {
@@ -191,6 +193,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
                         builder: (context) => SizedBox(
                           height: 300,
                           child: CupertinoTimerPicker(
+                            initialTimerDuration: (widget.activity.isNotEmpty) ? dateTimeToDuration(widget.activity[2]) : Duration.zero,
                             onTimerDurationChanged: (newTime) {
                               setState(() {
                                 endTime = newTime;
@@ -262,6 +265,14 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     }
 
     return DateTime(baseDate.year, baseDate.month, baseDate.day).add(duration);
+  }
+  
+  Duration dateTimeToDuration(DateTime baseDate){
+    int hours = baseDate.hour;
+    int minutes = baseDate.minute;
+    int seconds = baseDate.second;
+
+    return Duration(hours: hours, minutes: minutes, seconds: seconds);
   }
 
   // ["ACTIVITY_NAME", "CATEGORY", date(dateTime), timeSpent (seconds)]

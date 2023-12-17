@@ -26,45 +26,48 @@ class _SingleChoiceState extends State<SingleChoice> {
   }
 
   @override
-  Widget build(BuildContext context) {
-    return SegmentedButton<Selector>(
-      
-      style: ButtonStyle(
-        backgroundColor: MaterialStateProperty.resolveWith<Color>(
-          (Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
-              return Colors.orange;
-            }
-            return Colors.grey.shade800;
-          },
+Widget build(BuildContext context) {
+    return IntrinsicWidth(
+      stepWidth: 120,
+      child: SegmentedButton<Selector>(
+        showSelectedIcon: false,
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (Set<MaterialState> states) {
+              if (states.contains(MaterialState.selected)) {
+                return Colors.orange;
+              }
+              return Colors.grey.shade800;
+            },
+          ),
+          minimumSize: MaterialStateProperty.all(const Size(80, 40)),
         ),
-        minimumSize: MaterialStateProperty.all(const Size(80,40)),
+        segments: const <ButtonSegment<Selector>>[
+          ButtonSegment<Selector>(
+            value: Selector.Today,
+            label: Text('Today'),
+          ),
+          ButtonSegment<Selector>(
+            value: Selector.Week,
+            label: Text('Week'),
+          ),
+          ButtonSegment<Selector>(
+            value: Selector.Month,
+            label: Text('Month'),
+          ),
+          ButtonSegment<Selector>(
+            value: Selector.ALL,
+            label: Text('All'),
+          ),
+        ],
+        selected: <Selector>{selectorView},
+        onSelectionChanged: (Set<Selector> newSelection) {
+          setState(() {
+            selectorView = newSelection.first;
+          });
+          widget.onSelectionChanged(newSelection.first);
+        },
       ),
-      segments: const <ButtonSegment<Selector>>[
-        ButtonSegment<Selector>(
-          value: Selector.Today,
-          label: Text('Today'),
-        ),
-        ButtonSegment<Selector>(
-          value: Selector.Week,
-          label: Text('Week '),
-        ),
-        ButtonSegment<Selector>(
-          value: Selector.Month,
-          label: Text('Month'),
-        ),
-        ButtonSegment<Selector>(
-          value: Selector.ALL,
-          label: Text('All'),
-        ),
-      ],
-      selected: <Selector>{selectorView},
-      onSelectionChanged: (Set<Selector> newSelection) {
-        setState(() {
-          selectorView = newSelection.first;
-        });
-        widget.onSelectionChanged(newSelection.first);
-      },
     );
   }
 }
