@@ -21,33 +21,10 @@ class CategoryBox extends StatelessWidget {
         int.parse('FF$hexColor', radix: 16)); // Add FF for fully opaque color
   }
 
-  void createNewCategory(BuildContext context) {
-    // set up the buttons
-    Widget cancelButton = TextButton(
-      child: const Text("unfortunatelly"),
-      onPressed: () {
-        Navigator.pop(context);
-      },
-    );
-
-    AlertDialog alert = AlertDialog(
-      title: Text("You fool!"),
-      content: Text("you are trying to create a category"),
-      actions: [
-        cancelButton,
-      ],
-    );
-    showDialog(
-        context: context,
-        builder: (context) {
-          return alert;
-        });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: AlertDialog(
+    return AlertDialog(
           surfaceTintColor: Colors.black,
           backgroundColor: Colors.grey[850],
           content: SizedBox(
@@ -70,12 +47,6 @@ class CategoryBox extends StatelessWidget {
                   );
                 },
               )),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            createNewCategory(context);
-          },
-          child: const Icon(Icons.add),
-        ));
+        );
   }
 }

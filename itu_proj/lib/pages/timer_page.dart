@@ -48,6 +48,7 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
   Duration lastTimer = Duration.zero;
 
   String activityName = "";
+  Duration activityTime = Duration.zero;
 
 
   ///--------------------------------------------------------------
@@ -55,6 +56,11 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
   ///--------------------------------------------------------------
   String get countText {
     Duration count = controller.duration! * controller.value + Duration(minutes: minutes);
+    if(isIncremental){
+      activityTime = count;
+    }else{
+      activityTime = controller.duration! - count;
+    }
     //return formatted text in tertiary operator
     return controller.isDismissed  
       ? '${controller.duration!.inHours}:${(controller.duration!.inMinutes % 60).toString().padLeft(2, '0')}:${(controller.duration!.inSeconds % 60).toString().padLeft(2, '0')}'
@@ -128,7 +134,8 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
 
     if(categoryPickedName != "" && lastTimer != Duration.zero){
       activityName = activityNameController.text == "" ? "$categoryPickedName activity" : activityNameController.text;
-      db.activityList.add([activityName, categoryPickedName, DateTime.now(), lastTimer]);
+      db.activityList.add([activityName, categoryPickedName, DateTime.now(), activityTime]);
+      activityTime = Duration.zero;
       db.updateDataBase();
       setState(() {
         activitySaved = true;
@@ -412,7 +419,9 @@ class _TimerPageState extends State<TimerPage> with TickerProviderStateMixin, Au
                           isRunning = false;
                           isPaused = false;
                           categoryPicked = false;
-                          activityCreate();
+                          if(isIncremental){
+                            activityCreate();
+                          }
                         });
                       },
                       child: RoundButtonRight(
