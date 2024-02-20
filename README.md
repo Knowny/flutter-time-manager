@@ -3,6 +3,8 @@
 
 A Flutter application project for User Interface Programming Course (Brno University of Technology).
 
+The Dart code is in **itu-flutter/itu_proj/lib**
+
 ### Authors:
 
  - **Tomas Husar (xhusar11)**
