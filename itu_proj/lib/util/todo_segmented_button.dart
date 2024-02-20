@@ -1,5 +1,9 @@
-/// author(s): xhusar11en
+/// author(s): xhusar11
 import 'package:flutter/material.dart';
+
+// https://api.flutter.dev/flutter/material/SegmentedButton-class.html
+
+// *========================== SEGMENTED BUTTON ==========================*//
 
 enum Selector { Tasks, Habits }
 

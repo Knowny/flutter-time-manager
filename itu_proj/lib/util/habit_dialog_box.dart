@@ -1,7 +1,12 @@
-// author(s): xhusar11
+/// author(s): xhusar11
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:itu_proj/util/my_button.dart';
+
+// https://stackoverflow.com/questions/54775097/formatting-a-duration-like-hhmmss
+// https://api.flutter.dev/flutter/cupertino/CupertinoTimerPicker-class.html
+
+// *========================== HABIT DIALOG ==========================*//
 
 class HabitDialogBox extends StatefulWidget {
   final habitNameController;
@@ -23,13 +28,11 @@ class HabitDialogBox extends StatefulWidget {
 
 class _HabitDialogBoxState extends State<HabitDialogBox> {
   // variable to store the selected time
-  Duration selectedDuration = Duration(hours: 0, minutes: 0, seconds: 0);
+  Duration selectedDuration = const Duration(hours: 0, minutes: 0, seconds: 0);
 
   // * FORMAT THE DURATION to HH:mm:ss
-  //https://stackoverflow.com/questions/54775097/formatting-a-duration-like-hhmmss
   format(Duration d) => d.toString().split('.').first.padLeft(8, "0");
 
-  // https://api.flutter.dev/flutter/cupertino/CupertinoTimerPicker-class.html
   // * TIME PICKER
   void _showTimePicker(BuildContext context) {
     showCupertinoModalPopup(
@@ -57,7 +60,7 @@ class _HabitDialogBoxState extends State<HabitDialogBox> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CupertinoButton(
-                      child: Text('SELECT'),
+                      child: const Text('SELECT'),
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
@@ -79,8 +82,12 @@ class _HabitDialogBoxState extends State<HabitDialogBox> {
         height: 300,
         child:
             Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
-          // todo fix the text
-          const Text('Habit name:'),
+          const Text(
+            'Habit name:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           // * USER INPUT - HABIT NAME
           TextField(
             controller: widget.habitNameController,
@@ -91,8 +98,12 @@ class _HabitDialogBoxState extends State<HabitDialogBox> {
               hintText: "Add a new Habit",
             ),
           ),
-          // todo fix the text
-          const Text('Habit duration:'),
+          const Text(
+            'Habit duration:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           GestureDetector(
             onTap: () {
               _showTimePicker(context);
@@ -101,14 +112,13 @@ class _HabitDialogBoxState extends State<HabitDialogBox> {
               controller: widget.habitDurationController,
               enabled: false, // disable the text field editing
               decoration: InputDecoration(
-                enabledBorder: OutlineInputBorder(
+                enabledBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey)),
-                border: OutlineInputBorder(),
+                border: const OutlineInputBorder(),
                 hintText: '${format(selectedDuration)}',
               ),
             ),
           ),
-          // todo * USER INPUT - HABIT CATEGORY
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [

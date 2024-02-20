@@ -1,7 +1,9 @@
-// author(s): xhusar11
+/// author(s): xhusar11
 import 'package:flutter/material.dart';
 
-// context color
+// *========================== DIALOG BOX BUTTONS ==========================*//
+
+// * CONTENT COLOR
 class MyButtonSecondary extends StatelessWidget {
   final String text;
   VoidCallback onPressed;
@@ -21,7 +23,7 @@ class MyButtonSecondary extends StatelessWidget {
   }
 }
 
-// orange color
+// * ORANGE COLOR
 class MyButtonPrimary extends StatelessWidget {
   final String text;
   VoidCallback onPressed;

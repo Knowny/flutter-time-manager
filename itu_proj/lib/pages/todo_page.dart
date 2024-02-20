@@ -1,15 +1,23 @@
 /// author(s): xhusar11
 import 'dart:async';
-
-import 'package:awesome_notifications/awesome_notifications.dart';
-import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+import 'package:flutter/material.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
+
 import 'package:itu_proj/data/database.dart';
+import 'package:itu_proj/util/todo_segmented_button.dart';
+import 'package:itu_proj/util/todo_dialogs.dart';
 import 'package:itu_proj/util/habit_dialog_box.dart';
 import 'package:itu_proj/util/habit_tile.dart';
 import 'package:itu_proj/util/task_dialog_box.dart';
-import 'package:itu_proj/util/todo_segmented_button.dart';
-import '../util/task_tile.dart';
+import 'package:itu_proj/util/task_tile.dart';
+
+// https://github.com/mitchkoko/ToDoFlutter
+// https://github.com/mitchkoko/HabitTrackerFlutter
+// https://stackoverflow.com/questions/65657495/flutter-debuglifecyclestate-elementlifecycle-defunct-is-not-true
+// https://api.flutter.dev/flutter/dart-core/List/sort.html
+
+// *========================== TODO_PAGE ==========================*//
 
 class TodoPage extends StatefulWidget {
   const TodoPage({super.key});
@@ -19,8 +27,6 @@ class TodoPage extends StatefulWidget {
 }
 
 // * AUTOMATIC KEEP ALIVE
-//https://stackoverflow.com/questions/65657495/flutter-debuglifecyclestate-elementlifecycle-defunct-is-not-true
-
 class _TodoPageState extends State<TodoPage>
     with AutomaticKeepAliveClientMixin {
   // select tasks
@@ -51,6 +57,13 @@ class _TodoPageState extends State<TodoPage>
   @override
   bool get wantKeepAlive => true;
 
+  // * Task name controller
+  final _taskNameController = TextEditingController();
+  // * Habit name controller
+  final _habitNameController = TextEditingController();
+  // * Habit duration controller
+  final _habitDurationController = TextEditingController();
+
   // send notification (android only)
   triggerNotification(String habitName) {
     AwesomeNotifications().createNotification(
@@ -58,7 +71,7 @@ class _TodoPageState extends State<TodoPage>
         id: 10,
         channelKey: 'basic_channel',
         title: 'Habit Completed',
-        body: '${habitName} is Completed!',
+        body: '$habitName is Completed!',
       ),
     );
   }
@@ -84,32 +97,38 @@ class _TodoPageState extends State<TodoPage>
     return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 
-  // * Task name controller
-  final _taskNameController = TextEditingController();
-
-  // * Habit name controller
-  final _habitNameController = TextEditingController();
-  // * Habit duration controller
-  final _habitDurationController = TextEditingController();
+  // *========================== HABIT FUNCTIONS ==========================*//
 
   // * ADD/REMOVE HABIT TO/FROM FAVOURITES
   void addHabitToFavourites(int index) {
-    setState(() {
-      db.habitList[index][5] = !db.habitList[index][5];
-    });
-
-    // https://api.flutter.dev/flutter/dart-core/List/sort.html
-    // sort the list, so the favourites are before the non-favourites
-    db.habitList.sort((a, b) {
-      if (a[5] && !b[5]) {
-        return -1; // a = true, b = false -> a should be before b
-      } else if (!a[5] && b[5]) {
-        return 1; // a = false, b = true -> b should be before a
-      } else {
-        return 0; // a = b -> dont change the order
+    // variable for running timer check
+    bool habitTimerActive = false;
+    // any timer is running -> habitTimerActive = true
+    for (var i = 0; i < db.habitList.length; i++) {
+      if (db.habitList[i][2] == true) {
+        habitTimerActive = true;
       }
-    });
-    db.updateDataBase();
+    }
+    // if no timer is running
+    if (!habitTimerActive) {
+      setState(() {
+        db.habitList[index][5] = !db.habitList[index][5];
+      });
+      // sort the list, so the favourites are before the non-favourites
+      db.habitList.sort((a, b) {
+        if (a[5] && !b[5]) {
+          return -1; // a = true, b = false -> a should be before b
+        } else if (!a[5] && b[5]) {
+          return 1; // a = false, b = true -> b should be before a
+        } else {
+          return 0; // a = b -> dont change the order
+        }
+      });
+      db.updateDataBase();
+    } else {
+      // alert the user to turn off the timer(s)
+      addHabitToFavouritesWhileActiveDialog(context);
+    }
   }
 
   // * START/STOP HABIT TIMER
@@ -136,12 +155,11 @@ class _TodoPageState extends State<TodoPage>
         db.habitList[index][2] = !db.habitList[index][2];
       });
       db.updateDataBase();
-
       // used, because the time in db is stored in seconds, not milliseconds
       var iterator = 0;
       // check if habit is active
       if (db.habitList[index][2]) {
-        Timer.periodic(Duration(milliseconds: 100), (timer) {
+        Timer.periodic(const Duration(milliseconds: 100), (timer) {
           setState(() {
             // check if the user stopped the timer
             if (!db.habitList[index][2]) {
@@ -167,7 +185,6 @@ class _TodoPageState extends State<TodoPage>
               if ((db.habitList[index][3] >= (db.habitList[index][4]))) {
                 // send notification
                 triggerNotification(db.habitList[index][0]);
-
                 // set the habit state to completed
                 db.habitList[index][1] = true;
               }
@@ -212,10 +229,11 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+      habitAddedSnackBar(context);
     } else if ((newHabitName.isNotEmpty) && (habitDuration <= 0)) {
-      _showEmptyHabitDurationDialog(context);
+      showEmptyHabitDurationDialog(context);
     } else {
-      _showEmptyHabitNameDialog(context);
+      showEmptyHabitNameDialog(context);
     }
   }
 
@@ -256,10 +274,11 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+      habitEditedSnackBar(context);
     } else if ((newName.isNotEmpty) && (hhmmss2Seconds(newDuration) <= 0)) {
-      _showEmptyHabitDurationDialog(context);
+      showEmptyHabitDurationDialog(context);
     } else {
-      _showEmptyHabitNameDialog(context);
+      showEmptyHabitNameDialog(context);
     }
   }
 
@@ -269,70 +288,10 @@ class _TodoPageState extends State<TodoPage>
       db.habitList.removeAt(index);
     });
     db.updateDataBase();
+    habitDeletedSnackBar(context);
   }
 
-  // * EMPTY NAME ALERT - TASK
-  void _showEmptyNameDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Invalid task name.'),
-          content: Text('Task name can not be empty.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // * EMPTY NAME ALERT - HABIT
-  void _showEmptyHabitNameDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Invalid habit name.'),
-          content: Text('Habit name can not be empty.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // * EMPTY DURATION ALERT - HABIT
-  void _showEmptyHabitDurationDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Set the habit duration.'),
-          content: Text('Habit duration can not be 00:00:00.'),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
+  // *========================== TASK FUNCTIONS ==========================*//
 
   // * TAPPED CHECKBOX - TASK
   void checkBoxChanged(bool? value, int index) {
@@ -348,7 +307,6 @@ class _TodoPageState extends State<TodoPage>
       db.taskList[index][2] = !db.taskList[index][2];
     });
 
-    // https://api.flutter.dev/flutter/dart-core/List/sort.html
     // sort the list, so the favourites are before the non-favourites
     db.taskList.sort((a, b) {
       if (a[2] && !b[2]) {
@@ -390,8 +348,9 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+      taskAddedSnackBar(context);
     } else {
-      _showEmptyNameDialog(context);
+      showEmptyNameDialog(context);
     }
   }
 
@@ -425,8 +384,9 @@ class _TodoPageState extends State<TodoPage>
       });
       Navigator.of(context).pop();
       db.updateDataBase();
+      taskEditedSnackBar(context);
     } else {
-      _showEmptyNameDialog(context);
+      showEmptyNameDialog(context);
     }
   }
 
@@ -436,7 +396,10 @@ class _TodoPageState extends State<TodoPage>
       db.taskList.removeAt(index);
     });
     db.updateDataBase();
+    taskDeletedSnackBar(context);
   }
+
+  // *========================== VIEW WIDGET ==========================*//
 
   // * BUILD PAGE
   @override
@@ -463,11 +426,12 @@ class _TodoPageState extends State<TodoPage>
                 ? ListView.builder(
                     itemCount: db.taskList.length,
                     itemBuilder: (context, index) {
-                      bool isLastTile = index == db.taskList.length -1;
+                      bool isLastTile = index == db.taskList.length - 1;
 
                       return Padding(
                         // * ADD A BOTTOM PADDING ONLY TO THE LAST TILE (because of the floating button)
-                        padding: EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
+                        padding:
+                            EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
                         child: TaskTile(
                           taskName: db.taskList[index][0],
                           taskCompleted: db.taskList[index][1],
@@ -486,11 +450,12 @@ class _TodoPageState extends State<TodoPage>
                 ListView.builder(
                     itemCount: db.habitList.length,
                     itemBuilder: (context, index) {
-                      bool isLastTile = index == db.habitList.length -1;
+                      bool isLastTile = index == db.habitList.length - 1;
 
                       return Padding(
                         // * ADD A BOTTOM PADDING ONLY TO THE LAST TILE (because of the floating button)
-                        padding: EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
+                        padding:
+                            EdgeInsets.only(bottom: isLastTile ? 64.0 : 0.0),
                         child: HabitTile(
                           habitName: db.habitList[index][0],
                           habitCompleted: db.habitList[index][1],

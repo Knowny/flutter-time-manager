@@ -12,13 +12,21 @@ class ActivityDialogBox extends StatefulWidget {
   VoidCallback onCancel;
   DateTime selectedDay;
   List<dynamic> activity;
+  final void Function(List<dynamic>,bool,int?) saveActivity;
+  final void Function(List<dynamic>) deleteActivity;
+
   ActivityDialogBox({
     super.key,
     required this.controller,
     required this.onCancel,
     required this.selectedDay,
+    this.saveActivity = _defaultSaveActivity,
+    this.deleteActivity = _defaultDeleteActivity,
     this.activity = const [],
   });
+
+  static void _defaultSaveActivity(List<dynamic> newActivity, bool isNew, int? index) {}
+  static void _defaultDeleteActivity(List<dynamic> activity) {}
 
   @override
   State<ActivityDialogBox> createState() => _ActivityDialogBox();
@@ -35,11 +43,9 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   ToDoDatabase db = ToDoDatabase();
   @override
   void initState() {
-    // 1st time ever opening app -> create default data
     if (_myBox.get("ACTIVITYLIST") == null) {
       db.createInitialData();
     } else {
-      // data already exists
       db.loadData();
     }
     super.initState();
@@ -47,137 +53,175 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   
   @override
   Widget build(BuildContext context) {
-    print(widget.activity);
+    if (widget.activity.isNotEmpty){
+      widget.controller.text = widget.activity[0];
+    } else if (db.activityExists(widget.controller.text)){
+      widget.controller.clear();
+    }
     return AlertDialog(
       surfaceTintColor: Colors.black,
       backgroundColor: Colors.grey[850],
       content: SizedBox(
-        height: 400,
-        child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, children: [
+        height: 350,
+        width: 400,
+        child: Column(mainAxisAlignment: MainAxisAlignment.spaceEvenly, 
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                //picking activity name
+                Expanded(
+                  child: TextField(
+                    controller: widget.controller,
+                    decoration: InputDecoration(
+                      enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                      border: const OutlineInputBorder(),
+                      hintText: (widget.activity.isEmpty) ? "Add activity name" : widget.activity[0],
+                    ),
+                  ),
+                ),
+                const SizedBox(
+                  width: 8,
+                ),
+                //showing delete button
+                if (widget.activity.isNotEmpty)
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: IconButton(
+                      icon: const Icon(Icons.delete),
+                      iconSize: 30,
+                      color: Colors.red,
+                      onPressed: () => widget.deleteActivity(widget.activity),
+                    ),
+                  ),
+              ]
+            ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              //picking activity name
-              Expanded(
-                child: TextField(
-                  controller: widget.controller,
-                  decoration: InputDecoration(
-                    enabledBorder: const OutlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
-                    border: const OutlineInputBorder(),
-                    hintText: (widget.activity.isEmpty) ? "Add activity name" : widget.activity[0],
-                  ),
-                ),
+            // picking category
+              const Text(
+                "Category:",
+                style: TextStyle(fontSize: 20),
               ),
-              const SizedBox(
-                width: 8,
-              ),
-              //showing delete button
-              if (widget.activity.isNotEmpty)
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(
-                    icon: const Icon(Icons.delete),
-                    iconSize: 30,
-                    color: Colors.red,
-                    onPressed: deleteActivity,
-                  ),
-                ),
-            ]
-          ),
-          // picking category
-          GestureDetector(
-            onTap: () async {
-              await showDialog(
-                context: context,
-                builder: (context) {
-                  return CategoryBox(
-                    categoryList: db.categoryList,
-                    onCategorySelected: (selectedCategory) {
-                        setState(() {
-                          categoryPickedName = selectedCategory;
-                          categoryPicked = true;
-                        });
+              const SizedBox(width: 50),
+              GestureDetector(
+                onTap: () async {
+                  await showDialog(
+                    context: context,
+                    builder: (context) {
+                      return CategoryBox(
+                        categoryList: db.categoryList,
+                        onCategorySelected: (selectedCategory) {
+                            setState(() {
+                              categoryPickedName = selectedCategory;
+                              categoryPicked = true;
+                            });
+                        },
+                      );
                     },
                   );
                 },
-              );
-            },
-            child: Column(
-              children: [
-                CategoryTile(
-                    categoryName: 
-                    (categoryPickedName == "" && widget.activity.isEmpty) ? "Select Category" : 
-                    (categoryPickedName == "") ? widget.activity[1] : categoryPickedName, 
-                    categoryColor: db.getCategoryColor(
-                      (categoryPickedName == "" && widget.activity.isEmpty) ? "Select Category" : 
-                      (categoryPickedName == "") ? widget.activity[1] : categoryPickedName),
+                child: Column(
+                  // showing category that was picked, or default one
+                  children: [
+                    CategoryTile(
+                        categoryName: 
+                        (categoryPickedName == "" && widget.activity.isEmpty) ? "Category" : 
+                        (categoryPickedName == "") ? widget.activity[1] : categoryPickedName, 
+                        categoryColor: db.getCategoryColor(
+                          (categoryPickedName == "" && widget.activity.isEmpty) ? "Category" : 
+                          (categoryPickedName == "") ? widget.activity[1] : categoryPickedName),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          // Picking start time
-           GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (context) => Container(
-                    height: 300,
-                    child: CupertinoTimerPicker(
-                      onTimerDurationChanged: (newTime) {
-                        setState(() {
-                          startTime = newTime;
-                        });
-                      },
+          Row(
+            children: [
+              Expanded(
+                // picking start time
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: const Color.fromARGB(255, 96, 96, 96)),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: GestureDetector(
+                    // time picker
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => SizedBox(
+                          height: 300,
+                          child: CupertinoTimerPicker(
+                            initialTimerDuration: (widget.activity.isNotEmpty) ? dateTimeToDuration(getStartTime(widget.activity)) : Duration.zero,
+                            onTimerDurationChanged: (newTime) {
+                              setState(() {
+                                startTime = newTime;
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      // showing helpful texts
+                      children: [
+                        const SizedBox(width: 8),
+                        Text(
+                          startTime != null
+                              ? formatDuration(startTime!)
+                              : ((widget.activity.isNotEmpty)) ? formatDayTime(getStartTime(widget.activity)) : 'Select Start Time',
+                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ],
                     ),
                   ),
-                );
-              },
-              child: Column(
-                children: [
-                  const SizedBox(width: 8),
-                  Text(
-                    // TODO CHECK IF ACTIVITY IS EMPTY AND SHOW ITS TIME
-                    startTime != null
-                        ? 'Start Time: ${formatDuration(startTime!)}'
-                        : 'Select Start Time', 
-                        // (widget.activity.isEmpty) 
-                        //   ? 
-                        //   : getStartTime(widget.activity),
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ],
+                ),
               ),
-            ),
-            // Picking end time
-            GestureDetector(
-              onTap: () {
-                showModalBottomSheet(
-                    context: context, 
-                    builder: (context) => Container(
-                      height: 300,
-                      child: CupertinoTimerPicker(
-                        onTimerDurationChanged: (newTime) {
-                          setState(() {
-                            endTime = newTime;
-                          });
-                        },
-                      ),
+              const SizedBox(width: 10),
+              Expanded(
+                // picking end time
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: const Color.fromARGB(255, 96, 96, 96)),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: GestureDetector(
+                    // time picker
+                    onTap: () {
+                      showModalBottomSheet(
+                        context: context,
+                        builder: (context) => SizedBox(
+                          height: 300,
+                          child: CupertinoTimerPicker(
+                            initialTimerDuration: (widget.activity.isNotEmpty) ? dateTimeToDuration(widget.activity[2]) : Duration.zero,
+                            onTimerDurationChanged: (newTime) {
+                              setState(() {
+                                endTime = newTime;
+                              });
+                            },
+                          ),
+                        ),
+                      );
+                    },
+                    child: Column(
+                      // showing helpful text
+                      children: [
+                        Text(
+                          endTime != null
+                              ? formatDuration(endTime!)
+                              : ((widget.activity.isNotEmpty)) ? formatDayTime(widget.activity[2]) : 'Select End Time',
+                          style: const TextStyle(color: Colors.white, fontSize: 15),
+                        ),
+                      ],
                     ),
-                );
-              },
-              child: Column(
-                children: [
-                  Text(
-                    // TODO CHECK IF ACTIVITY IS EMPTY AND SHOW ITS TIME
-                    endTime != null
-                        ? 'End Time: ${formatDuration(endTime!)}'
-                        : 'Select End Time',
-                    style: const TextStyle(color: Colors.white),
                   ),
-                ],
+                ),
               ),
-            ),
-          //save + cancel button
+            ],
+          ),
+          //save/edit + cancel button
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -194,7 +238,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
               ),
 
               const SizedBox(
-                width: 50,
+                width: 100,
               ),
 
               //cancel button
@@ -209,25 +253,82 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
     );
   }
 
-  // String getStartTime(List<dynamic> activity){
-    
-  // }
+  //*          *//
+  //  Functions //
+  //*          *//
 
+  DateTime getStartTime(List<dynamic> activity) {
+    // calculate start time from activity
+    Duration duration = activity[3];
+    DateTime endTime = activity[2];
+
+    DateTime startTime = endTime.subtract(duration);
+    
+    return startTime;
+  }
   
   DateTime durationToDateTime(Duration? duration, DateTime baseDate) {
+    // convert duration to dateTime
     if (duration == null){
       return baseDate;
     }
 
     return DateTime(baseDate.year, baseDate.month, baseDate.day).add(duration);
   }
+  
+  Duration dateTimeToDuration(DateTime baseDate){
+    // convert dateTime to duration
+    int hours = baseDate.hour;
+    int minutes = baseDate.minute;
+    int seconds = baseDate.second;
 
-  // ["ACTIVITY_NAME", "CATEGORY", date(dateTime), timeSpent (seconds)]
+    return Duration(hours: hours, minutes: minutes, seconds: seconds);
+  }
+    Duration calculateDuration(Duration? startTime, Duration? endTime) {
+    // calculate duration from start to end times
+    if (startTime == null || endTime == null) {
+      return const Duration(hours: 0, minutes: 0, seconds: 0);
+    }
+
+    return (startTime - endTime).abs();
+  }
+
+  String formatDuration(Duration duration) {
+    // format duration to readable string
+    int hours = duration.inHours;
+    int minutes = (duration.inMinutes % 60);
+    int seconds = (duration.inSeconds % 60);
+
+    String hoursString = hours.toString().padLeft(2, '0');
+    String minutesString = minutes.toString().padLeft(2, '0');
+    String secondsString = seconds.toString().padLeft(2, '0');
+
+    return '$hoursString:$minutesString:$secondsString';
+  }
+
+  String formatDayTime(DateTime time) {
+    // format datetime to readable string
+    int hours = time.hour;
+    int minutes = time.minute;
+    int seconds = time.second;
+
+    String hoursString = hours.toString().padLeft(2, '0');
+    String minutesString = minutes.toString().padLeft(2, '0');
+    String secondsString = seconds.toString().padLeft(2, '0');
+
+    return '$hoursString:$minutesString:$secondsString';
+  }
+
   void saveNewActivity() {
+    // check input correctness and create newActivity and call save activity
     DateTime newStart = durationToDateTime(startTime, widget.selectedDay);
     DateTime newEnd = durationToDateTime(endTime, widget.selectedDay);
 
-    // TODO add checks only if activity does not exists??
+    if (widget.activity.isNotEmpty && !categoryPicked){
+        categoryPickedName = widget.activity[1];
+        categoryPicked = true;
+    }
+
     if (!checkStartEnd(newStart, newEnd)) {
       _showErrorInvalidTimes(context);
     } else if (!checkFutureTest(newStart, newEnd)) {
@@ -242,33 +343,21 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
       _showErrorEmptyCategory(context);
     }else {
       List<dynamic> newActivity = [widget.controller.text, categoryPickedName, newEnd, calculateDuration(startTime, endTime)];
-      setState(() {
-        print(newActivity);
-        if (widget.activity.isEmpty){
-          db.activityList.add(newActivity);
-        } else {
-          int index = db.activityList.indexOf(widget.activity);
-          db.activityList[index] = newActivity;
-        }
-      });
-      widget.controller.clear();
-      db.updateDataBase();
-      Navigator.of(context).pop();
+      if (widget.activity.isEmpty) {
+        widget.saveActivity(newActivity, true, null);
+      } else {
+        int index = db.activityList.indexOf(widget.activity);
+        widget.saveActivity(newActivity, false, index);
+      }
     }
   }
 
-  // delete activity
-  void deleteActivity() {
-    setState(() {
-      db.activityList.remove(widget.activity);
-    });
-    db.updateDataBase();
-    widget.controller.clear();
-    Navigator.of(context).pop();
-  }
+  //*                          *//
+  //  Checking input and aletrs //
+  //*                          *//
 
   bool checkFutureTest(DateTime startTime, DateTime endTime){    
-    //? Check the duration start and end so you don't create something in the future
+    // Check the duration start and end so you don't create something in the future
     DateTime now = DateTime.now();
     if (startTime.isAfter(now) || endTime.isAfter(now)) {
       return false;
@@ -277,7 +366,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   bool checkStartEnd(DateTime startTime, DateTime endTime){  
-    //? Check that the start duration isn't later than the end duration or naturally reverse it
+    // Check that the start duration isn't later than the end duration or naturally reverse it
     if (startTime.isAfter(endTime)) {
       return false;
     }
@@ -285,7 +374,7 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
   
   bool checkName(){    
-    //? Check if the activity name is not empty
+    // Check if the activity name is not empty
     if (widget.controller.text.isEmpty) {
       return false;
     }
@@ -293,7 +382,8 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   bool checkCategory() {
-    if (categoryPickedName == ""){
+    // check if category was picked
+    if (!categoryPicked){
       return false;
     }
     return true;
@@ -307,36 +397,11 @@ class _ActivityDialogBox extends State<ActivityDialogBox>{
   }
 
   bool checkEmptyTimes(){
+    // check if any time was picked
     if (startTime == null || endTime == null) {
       return false;
     }
     return true;
-  }
-
-  Duration calculateDuration(Duration? startTime, Duration? endTime) {
-    if (startTime == null || endTime == null) {
-      return const Duration(hours: 0, minutes: 0, seconds: 0);
-    }
-
-    return (startTime - endTime).abs();
-  }
-
-  String formatDuration(Duration duration) {
-    int hours = duration.inHours;
-    int minutes = (duration.inMinutes % 60);
-    int seconds = (duration.inSeconds % 60);
-    
-    String period = (hours >= 12) ? 'PM' : 'AM';
-
-    if (hours > 12) {
-      hours -= 12;
-    }
-
-    String hoursString = hours.toString().padLeft(2, '0');
-    String minutesString = minutes.toString().padLeft(2, '0');
-    String secondsString = seconds.toString().padLeft(2, '0');
-
-    return '$hoursString:$minutesString:$secondsString $period';
   }
 
   // empty name

@@ -4,13 +4,18 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:itu_proj/data/database.dart';
 import 'package:itu_proj/util/stats_segmented_button.dart';
 
+/// source: https://github.com/imaNNeo/fl_chart/blob/master/repo_files/documentations/pie_chart.md
+
 class MyPieChart extends StatefulWidget {
   final ToDoDatabase db;
   final Selector selectorView;
+  final void Function(int) onTouchedIndexChanged;
   
   MyPieChart({
     required this.db,
-    required this.selectorView});
+    required this.selectorView,
+    required this.onTouchedIndexChanged,
+    });
 
   @override
   _MyPieChartState createState() => _MyPieChartState();
@@ -32,7 +37,7 @@ class _MyPieChartState extends State<MyPieChart> {
     colors = [];
     if (widget.selectorView == Selector.Today) {
       for (var index = 0; index < widget.db.categoryList.length; index++) {
-        Color categoryColor = widget.db.categoryList[index][1];
+        Color categoryColor = widget.db.getCategoryColor(widget.db.categoryList[index][0]);
         double categoryTime = widget.db.getTodayTotal(widget.db.categoryList[index][0]);
 
         spots.add(FlSpot(index.toDouble(), categoryTime));
@@ -40,7 +45,7 @@ class _MyPieChartState extends State<MyPieChart> {
       }
     } else if (widget.selectorView == Selector.Week) {
       for (var index = 0; index < widget.db.categoryList.length; index++) {
-        Color categoryColor = widget.db.categoryList[index][1];
+        Color categoryColor = widget.db.getCategoryColor(widget.db.categoryList[index][0]);
         double categoryTime = widget.db.getThisWeekTotal(widget.db.categoryList[index][0]);
 
         spots.add(FlSpot(index.toDouble(), categoryTime));
@@ -48,7 +53,7 @@ class _MyPieChartState extends State<MyPieChart> {
       }
     } else if (widget.selectorView == Selector.Month) {
       for (var index = 0; index < widget.db.categoryList.length; index++) {
-        Color categoryColor = widget.db.categoryList[index][1];
+        Color categoryColor = widget.db.getCategoryColor(widget.db.categoryList[index][0]);
         double categoryTime = widget.db.getThisMonthTotal(widget.db.categoryList[index][0]);
 
         spots.add(FlSpot(index.toDouble(), categoryTime));
@@ -57,7 +62,7 @@ class _MyPieChartState extends State<MyPieChart> {
     } else {
       // ALL
       for (var index = 0; index < widget.db.categoryList.length; index++) {
-        Color categoryColor = widget.db.categoryList[index][1];
+        Color categoryColor = widget.db.getCategoryColor(widget.db.categoryList[index][0]);
         double categoryTime = widget.db.getCategoryTime(widget.db.categoryList[index][0]);
 
         spots.add(FlSpot(index.toDouble(), categoryTime));
@@ -72,6 +77,7 @@ class _MyPieChartState extends State<MyPieChart> {
     return Stack(
       alignment: Alignment.center,
       children: [
+        //displaying pie chart
         PieChart(
           PieChartData(
             borderData: FlBorderData(
@@ -90,6 +96,7 @@ class _MyPieChartState extends State<MyPieChart> {
                   } else {
                     touchedIndex = pieTouchResponse.touchedSection!.touchedSectionIndex;
                   }
+                  widget.onTouchedIndexChanged(touchedIndex);
                 });
               },
             ),
@@ -98,21 +105,22 @@ class _MyPieChartState extends State<MyPieChart> {
             sections: showingSections(spots, colors),
           ),
         ),
+        // displaying text in the middle of pie chart
         Text(
           (touchedIndex == -1 ? "Total time" : widget.db.categoryList[touchedIndex][0]) + "\n" + 
           formatDuration(
-            touchedIndex == -1 ? widget.db.getTotalTimeSpent() : spots[touchedIndex].y,
+            touchedIndex == -1 ? getTotalTimeSpent() : spots[touchedIndex].y,
           ),
           style: const TextStyle(fontSize: 20),
 
         ),
-        //TODO add after clicked section specific activities and times
       ],
     );
   }
 
   List<PieChartSectionData> showingSections(List<FlSpot> spots, List<Color> colors) {
-    if (spots.isEmpty && colors.isEmpty) {
+    // show sections of pie chart
+    if (spots.every((spot) => spot.y == 0)) {
       return [
         PieChartSectionData(
           color: Colors.grey,
@@ -137,6 +145,7 @@ class _MyPieChartState extends State<MyPieChart> {
   }
 
   String formatDuration(double minutes) {
+    // format duration to readable string
     int totalSeconds = (minutes * 60).round();
     int hours = totalSeconds ~/ 3600;
     int minutesPart = (totalSeconds ~/ 60) % 60;
@@ -149,4 +158,11 @@ class _MyPieChartState extends State<MyPieChart> {
     return '$hoursString:$minutesString:$secondsString';
   }
 
+  double getTotalTimeSpent(){
+    double totalTime = 0;
+    for (var spot in spots) {
+      totalTime += spot.y;
+    }
+    return totalTime;
+  }
 }
